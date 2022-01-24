@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BnplPartners\Factoring004;
 
+use BnplPartners\Factoring004\Otp\OtpResource;
 use BnplPartners\Factoring004\PreApp\PreAppResource;
 use BnplPartners\Factoring004\Transport\TransportInterface;
 use InvalidArgumentException;
@@ -64,6 +65,14 @@ class ApiTest extends TestCase
         $this->expectException(OutOfBoundsException::class);
 
         $this->assertNull($api->test);
+    }
+
+    public function testOtp(): void
+    {
+        $api = new Api($this->transport, static::BASE_URI);
+
+        $this->assertInstanceOf(OtpResource::class, $api->otp);
+        $this->assertSame($api->otp, $api->otp);
     }
 }
 

@@ -127,6 +127,42 @@ var_dump($response->getStatus(), $response->getPreAppId(), $response->getRedirec
 var_dump($response->toArray(), json_encode($response));
 ```
 
+#### OTP
+
+Send OTP
+
+```php
+use BnplPartners\Factoring004\Otp\SendOtp;
+
+$sendOtp = new SendOtp('1', '1');
+
+// or
+$sendOtp = SendOtp::createFromArray(['merchantId' => '1', 'merchantOrderId' => '1']);
+
+// send request and receive response
+$response = $api->otp->sendOtp($sendOtp);
+
+var_dump($response->getMsg());
+var_dump($response->toArray(), json_encode($response));
+```
+
+Check OTP
+
+```php
+use BnplPartners\Factoring004\Otp\CheckOtp;
+
+$checkOtp = new CheckOtp('1', '1', '1111');
+
+// or
+$checkOtp = CheckOtp::createFromArray(['merchantId' => '1', 'merchantOrderId' => '1', 'otp' => '1111']);
+
+// send request and receive response
+$response = $api->otp->checkOtp($checkOtp);
+
+var_dump($response->getMsg());
+var_dump($response->toArray(), json_encode($response));
+```
+
 ### Error handling
 
 Whenever api returns an error client will throw an instance of ``BnplPartners\Factoring004\Exception\ApiException``.
@@ -189,6 +225,7 @@ Each resource is a set of grouped endpoints.
 
 ```php
 use BnplPartners\Factoring004\Auth\BearerTokenAuth;
+use BnplPartners\Factoring004\Otp\OtpResource;
 use BnplPartners\Factoring004\PreApp\PreAppResource;
 
 require_once __DIR__ . '/vendor/autoload.php';
@@ -197,6 +234,9 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 $preApp = new PreAppResource($transport, 'http://api-domain.com', new BearerTokenAuth('Access Token'));
 $response = $preApp->preApp(...);
+
+$otp = new OtpResource($transport, 'http://api-domain.com', new BearerTokenAuth('Access Token'));
+$response = $otp->sendOtp(...);
 ```
 
 ### Transport layer
