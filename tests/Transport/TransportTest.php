@@ -215,7 +215,7 @@ class TransportTest extends TestCase
     /**
      * @throws \BnplPartners\Factoring004\Exception\TransportException
      */
-    public function testPostWithBody(): void
+    public function testPostWithJsonBody(): void
     {
         $client = $this->createMock(ClientInterface::class);
         $client->expects($this->once())
@@ -227,6 +227,26 @@ class TransportTest extends TestCase
 
         $transport = $this->createTransport($client);
         $transport->post('/test', ['a' => 15, 'b' => 40, 'c' => [1, 2, 3]]);
+    }
+
+    /**
+     * @throws \BnplPartners\Factoring004\Exception\TransportException
+     */
+    public function testPostWithUrlEncodedBody(): void
+    {
+        $data = ['a' => 15, 'b' => 40, 'c' => [1, 2, 3]];
+
+        $client = $this->createMock(ClientInterface::class);
+        $client->expects($this->once())
+            ->method('sendRequest')
+            ->with($this->callback(function (RequestInterface $request) use ($data) {
+                return $request->getHeaderLine('Content-Type') === 'application/x-www-form-urlencoded'
+                    && $request->getBody()->getContents() === http_build_query($data);
+            }))
+            ->willReturn(new PsrResponse(200, [], '{"status": false, "message": "error"}'));
+
+        $transport = $this->createTransport($client);
+        $transport->post('/test', $data, ['Content-Type' => 'application/x-www-form-urlencoded']);
     }
 
     /**
@@ -250,19 +270,25 @@ class TransportTest extends TestCase
     /**
      * @dataProvider dataParametersProvider
      */
-    public function testRequestWithDataParameters(string $method, array $data, string $expectedData): void
+    public function testRequestWithDataParameters(
+        string $method,
+        string $contentType,
+        array $data,
+        string $expectedData
+    ): void
     {
         $client = $this->createMock(ClientInterface::class);
 
         $client->expects($this->once())
             ->method('sendRequest')
-            ->with($this->callback(function (RequestInterface $request) use ($method, $expectedData) {
-                return $request->getMethod() === $method && $request->getBody()->getContents() === $expectedData;
+            ->with($this->callback(function (RequestInterface $request) use ($contentType, $method, $expectedData) {
+                return $request->getHeaderLine('Content-Type') === $contentType
+                    && $request->getMethod() === $method && $request->getBody()->getContents() === $expectedData;
             }))
             ->willReturn(new PsrResponse(200, [], '{"status": true, "message": "text"}'));
 
         $transport = $this->createTransport($client);
-        $transport->request($method, '/test', $data);
+        $transport->request($method, '/test', $data, ['Content-Type' => $contentType]);
     }
 
     /**
@@ -306,6 +332,22 @@ class TransportTest extends TestCase
         $transport->get('/test');
     }
 
+    /**
+     * @testWith ["multipart/form-data"]
+     *           ["multipart/form-data"]
+
+     * @throws \BnplPartners\Factoring004\Exception\TransportException
+     */
+    public function testWithUnsupportedContentType(string $contentType): void
+    {
+        $client = $this->createStub(ClientInterface::class);
+
+        $this->expectException(DataSerializationException::class);
+
+        $transport = $this->createTransport($client);
+        $transport->post('/test', ['file' => tmpfile()], ['Content-Type' => $contentType]);
+    }
+
     public function queryParametersProvider(): array
     {
         return [
@@ -337,16 +379,37 @@ class TransportTest extends TestCase
         return [
             [
                 'POST',
+                'application/json',
                 ['a' => 15, 'b' => 20, 'c' => ['x' => 'str', 'y' => '100', 'c' => 200]],
                 '{"a":15,"b":20,"c":{"x":"str","y":"100","c":200}}',
             ],
             [
                 'PUT',
+                'application/json',
                 ['a' => 'one', 'b' => 'two', 'c' => ['a', 'b', 'c']],
                 '{"a":"one","b":"two","c":["a","b","c"]}',
             ],
             [
                 'PATCH',
+                'application/json',
+                [],
+                '',
+            ],
+            [
+                'POST',
+                'application/x-www-form-urlencoded',
+                $q = ['a' => 15, 'b' => 20, 'c' => ['x' => 'str', 'y' => '100', 'c' => 200]],
+                http_build_query($q),
+            ],
+            [
+                'PUT',
+                'application/x-www-form-urlencoded',
+                $q = ['a' => 'one', 'b' => 'two', 'c' => ['a', 'b', 'c']],
+                http_build_query($q),
+            ],
+            [
+                'PATCH',
+                'application/x-www-form-urlencoded',
                 [],
                 '',
             ],
