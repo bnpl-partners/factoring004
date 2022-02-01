@@ -23,6 +23,7 @@ use Psr\Http\Message\UriInterface;
 class Transport implements TransportInterface
 {
     protected const METHODS_WITHOUT_BODY = ['GET', 'HEAD', 'OPTIONS', 'DELETE'];
+    protected const DEFAULT_CONTENT_TYPE = 'application/json';
 
     protected RequestFactoryInterface $requestFactory;
     protected StreamFactoryInterface $streamFactory;
@@ -145,11 +146,21 @@ class Transport implements TransportInterface
             return '';
         }
 
-        try {
-            return json_encode($data, JSON_THROW_ON_ERROR);
-        } catch (JsonException $e) {
-            throw new DataSerializationException('Invalid JSON format', 0, $e);
+        $contentType = $request->getHeaderLine('Content-Type') ?: static::DEFAULT_CONTENT_TYPE;
+
+        if (strpos($contentType, 'json') !== false) {
+            try {
+                return json_encode($data, JSON_THROW_ON_ERROR);
+            } catch (JsonException $e) {
+                throw new DataSerializationException('Invalid JSON format', 0, $e);
+            }
         }
+
+        if ($contentType === 'application/x-www-form-urlencoded') {
+            return http_build_query($data);
+        }
+
+        throw new DataSerializationException('Unsupported content type ' . $contentType);
     }
 
     protected function createStream(string $content): StreamInterface

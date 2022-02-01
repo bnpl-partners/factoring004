@@ -5,6 +5,7 @@
 - [Usage](#usage)
     * [Create transport instance](#create-transport-instance)
     * [Create api instance](#create-api-instance)
+    * [Authentication](#authentication)
     * [Call endpoints](#call-endpoints)
     * [Error handling](#error-handling)
     * [Exception Hierarchy](#exception-hierarchy)
@@ -85,6 +86,34 @@ use BnplPartners\Factoring004\Auth\BearerTokenAuth;
 require_once __DIR__ . '/vendor/autoload.php';
 
 $api = Api::create($transport, 'http://api-domain.com', new BearerTokenAuth('Access Token'));
+```
+
+### Authentication
+
+#### Generate access token
+
+```php
+use BnplPartners\Factoring004\Api;
+use BnplPartners\Factoring004\Auth\BearerTokenAuth;
+use BnplPartners\Factoring004\OAuth\OAuthTokenManager;
+
+$tokenManager = new OAuthTokenManager($transport, 'http://api-domain.com', 'consumer key', 'consumer secret');
+$token = $tokenManager->getAccessToken();
+
+$api = Api::create($transport, 'http://api-domain.com', new BearerTokenAuth($token->getAccessToken()));
+```
+
+#### Cache access token
+
+```php
+use BnplPartners\Factoring004\Auth\BearerTokenAuth;
+use BnplPartners\Factoring004\OAuth\CacheOAuthTokenManager;
+use BnplPartners\Factoring004\OAuth\OAuthTokenManager;
+
+$tokenManager = new OAuthTokenManager($transport, 'http://api-domain.com', 'consumer key', 'consumer secret');
+
+$cache = ... // PSR-16 Cache
+$tokenManager = new CacheOAuthTokenManager($tokenManager, $cache, 'cache key');
 ```
 
 ### Call endpoints
