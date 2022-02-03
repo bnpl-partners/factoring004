@@ -96,24 +96,24 @@ class PreAppMessageTest extends TestCase
         $this->assertEquals($deliveryDate, $data->getDeliveryDate());
 
         $deliveryPoint = [];
-        $data = PreAppMessage::createFromArray(static::REQUIRED_DATA + ['deliveryPoint' => [$deliveryPoint]]);
-        $this->assertEquals([DeliveryPoint::createFromArray([])], $data->getDeliveryPoint());
+        $data = PreAppMessage::createFromArray(static::REQUIRED_DATA + compact('deliveryPoint'));
+        $this->assertEquals(DeliveryPoint::createFromArray([]), $data->getDeliveryPoint());
 
         $deliveryPoint = ['region' => 'Almaty'];
-        $data = PreAppMessage::createFromArray(static::REQUIRED_DATA + ['deliveryPoint' => [$deliveryPoint]]);
-        $this->assertEquals([DeliveryPoint::createFromArray($deliveryPoint)], $data->getDeliveryPoint());
+        $data = PreAppMessage::createFromArray(static::REQUIRED_DATA + compact('deliveryPoint'));
+        $this->assertEquals(DeliveryPoint::createFromArray($deliveryPoint), $data->getDeliveryPoint());
 
         $deliveryPoint = ['region' => 'Almaty', 'city' => 'Almaty'];
-        $data = PreAppMessage::createFromArray(static::REQUIRED_DATA + ['deliveryPoint' => [$deliveryPoint]]);
-        $this->assertEquals([DeliveryPoint::createFromArray($deliveryPoint)], $data->getDeliveryPoint());
+        $data = PreAppMessage::createFromArray(static::REQUIRED_DATA + compact('deliveryPoint'));
+        $this->assertEquals(DeliveryPoint::createFromArray($deliveryPoint), $data->getDeliveryPoint());
 
         $deliveryPoint = ['region' => 'Almaty', 'city' => 'Almaty', 'district' => 'Almaly'];
-        $data = PreAppMessage::createFromArray(static::REQUIRED_DATA + ['deliveryPoint' => [$deliveryPoint]]);
-        $this->assertEquals([DeliveryPoint::createFromArray($deliveryPoint)], $data->getDeliveryPoint());
+        $data = PreAppMessage::createFromArray(static::REQUIRED_DATA + compact('deliveryPoint'));
+        $this->assertEquals(DeliveryPoint::createFromArray($deliveryPoint), $data->getDeliveryPoint());
 
         $deliveryPoint = ['region' => 'Almaty', 'city' => 'Almaty', 'district' => 'Almaly', 'street' => 'Green'];
-        $data = PreAppMessage::createFromArray(static::REQUIRED_DATA + ['deliveryPoint' => [$deliveryPoint]]);
-        $this->assertEquals([DeliveryPoint::createFromArray($deliveryPoint)], $data->getDeliveryPoint());
+        $data = PreAppMessage::createFromArray(static::REQUIRED_DATA + compact('deliveryPoint'));
+        $this->assertEquals(DeliveryPoint::createFromArray($deliveryPoint), $data->getDeliveryPoint());
 
         $deliveryPoint = [
             'region' => 'Almaty',
@@ -122,8 +122,8 @@ class PreAppMessageTest extends TestCase
             'street' => 'Green',
             'house' => '10/15'
         ];
-        $data = PreAppMessage::createFromArray(static::REQUIRED_DATA + ['deliveryPoint' => [$deliveryPoint]]);
-        $this->assertEquals([DeliveryPoint::createFromArray($deliveryPoint)], $data->getDeliveryPoint());
+        $data = PreAppMessage::createFromArray(static::REQUIRED_DATA + compact('deliveryPoint'));
+        $this->assertEquals(DeliveryPoint::createFromArray($deliveryPoint), $data->getDeliveryPoint());
 
         $deliveryPoint = [
             'region' => 'Almaty',
@@ -133,8 +133,8 @@ class PreAppMessageTest extends TestCase
             'house' => '10/15',
             'flat' => '70'
         ];
-        $data = PreAppMessage::createFromArray(static::REQUIRED_DATA + ['deliveryPoint' => [$deliveryPoint]]);
-        $this->assertEquals([DeliveryPoint::createFromArray($deliveryPoint)], $data->getDeliveryPoint());
+        $data = PreAppMessage::createFromArray(static::REQUIRED_DATA + compact('deliveryPoint'));
+        $this->assertEquals(DeliveryPoint::createFromArray($deliveryPoint), $data->getDeliveryPoint());
     }
 
     /**
@@ -238,7 +238,7 @@ class PreAppMessageTest extends TestCase
 
     public function testSetDeliveryPoint(): void
     {
-        $deliveryPoint = [new DeliveryPoint()];
+        $deliveryPoint = new DeliveryPoint();
         $this->message->setDeliveryPoint($deliveryPoint);
         $this->assertEquals($deliveryPoint, $this->message->getDeliveryPoint());
     }
@@ -259,7 +259,7 @@ class PreAppMessageTest extends TestCase
         $this->message->setPhoneNumber('77771234567');
         $this->message->setExpiresAt($expiresAt = new DateTime());
         $this->message->setDeliveryDate($deliveryDate = new DateTime());
-        $this->message->setDeliveryPoint([DeliveryPoint::createFromArray(['flat' => '10', 'house' => '15'])]);
+        $this->message->setDeliveryPoint(DeliveryPoint::createFromArray(['flat' => '10', 'house' => '15']));
 
         $expected = [
             'partnerData' => ['partnerName' => 'a', 'partnerCode' => 'b', 'pointCode' => 'c'],
@@ -273,7 +273,12 @@ class PreAppMessageTest extends TestCase
             'expiresAt' => $expiresAt->format(DateTimeInterface::ISO8601),
             'deliveryDate' => $deliveryDate->format(DateTimeInterface::ISO8601),
             'deliveryPoint' => [
-                ['flat' => '10', 'house' => '15', 'street' => '', 'city' => '', 'district' => '', 'region' => '']
+                'flat' => '10',
+                'house' => '15',
+                'street' => '',
+                'city' => '',
+                'district' => '',
+                'region' => '',
             ],
         ];
         $this->assertEquals($expected, $this->message->toArray());

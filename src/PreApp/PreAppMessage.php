@@ -20,11 +20,7 @@ class PreAppMessage implements ArrayInterface
     private string $phoneNumber = '';
     private ?DateTimeInterface $expiresAt = null;
     private ?DateTimeInterface $deliveryDate = null;
-
-    /**
-     * @var \BnplPartners\Factoring004\PreApp\DeliveryPoint[]
-     */
-    private array $deliveryPoint = [];
+    private ?DeliveryPoint $deliveryPoint = null;
 
     public function __construct(
         PartnerData $partnerData,
@@ -74,7 +70,7 @@ class PreAppMessage implements ArrayInterface
                street?: string,
                house?: string,
                flat?: string,
-           }[],
+           },
      * } $data
      *
      * @throws \InvalidArgumentException
@@ -115,12 +111,7 @@ class PreAppMessage implements ArrayInterface
         }
 
         if (isset($data['deliveryPoint'])) {
-            $object->setDeliveryPoint(
-                array_map(
-                    fn(array $deliveryPoint) => DeliveryPoint::createFromArray($deliveryPoint),
-                    $data['deliveryPoint'] ?? []
-                )
-            );
+            $object->setDeliveryPoint(DeliveryPoint::createFromArray($data['deliveryPoint']));
         }
 
         return $object;
@@ -142,10 +133,7 @@ class PreAppMessage implements ArrayInterface
         return $this;
     }
 
-    /**
-     * @param \BnplPartners\Factoring004\PreApp\DeliveryPoint[] $deliveryPoint
-     */
-    public function setDeliveryPoint(array $deliveryPoint): PreAppMessage
+    public function setDeliveryPoint(DeliveryPoint $deliveryPoint): PreAppMessage
     {
         $this->deliveryPoint = $deliveryPoint;
         return $this;
@@ -213,10 +201,7 @@ class PreAppMessage implements ArrayInterface
         return $this->deliveryDate;
     }
 
-    /**
-     * @return \BnplPartners\Factoring004\PreApp\DeliveryPoint[]
-     */
-    public function getDeliveryPoint(): array
+    public function getDeliveryPoint(): ?DeliveryPoint
     {
         return $this->deliveryPoint;
     }
@@ -228,6 +213,7 @@ class PreAppMessage implements ArrayInterface
     {
         $expiresAt = $this->getExpiresAt();
         $deliveryDate = $this->getDeliveryDate();
+        $deliveryPoint = $this->getDeliveryPoint();
 
         return array_filter([
             'partnerData' => $this->getPartnerData()->toArray(),
@@ -240,7 +226,7 @@ class PreAppMessage implements ArrayInterface
             'deliveryDate' => $deliveryDate === null ? null : $deliveryDate->format(DateTimeInterface::ISO8601),
             'failRedirect' => $this->getFailRedirect(),
             'phoneNumber' => $this->getPhoneNumber(),
-            'deliveryPoint' => array_map(fn($deliveryPoint) => $deliveryPoint->toArray(), $this->getDeliveryPoint()),
+            'deliveryPoint' => $deliveryPoint ? $deliveryPoint->toArray() : null,
         ]);
     }
 }
