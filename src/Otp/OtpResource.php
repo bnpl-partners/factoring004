@@ -70,6 +70,10 @@ class OtpResource extends AbstractResource
                 $data = $data['error'];
             }
 
+            if (isset($data['fault']) && is_array($data['fault'])) {
+                $data = $data['fault'];
+            }
+
             if (empty($data['code'])) {
                 throw new UnexpectedResponseException($response, $data['message'] ?? 'Unexpected response schema');
             }
