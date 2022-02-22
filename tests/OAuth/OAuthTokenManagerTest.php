@@ -61,7 +61,7 @@ class OAuthTokenManagerTest extends TestCase
                 return $request->getMethod() === 'POST'
                     && $request->getUri()->getAuthority() === 'example.com'
                     && $request->getUri()->getScheme() === 'http'
-                    && $request->getUri()->getPath() === '/oauth2/token'
+                    && $request->getUri()->getPath() === '/token'
                     && $request->getHeaderLine('Authorization') === 'Basic ' . base64_encode(
                         $consumerKey . ':' . $consumerSecret
                     )
