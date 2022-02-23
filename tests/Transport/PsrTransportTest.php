@@ -20,7 +20,7 @@ use Psr\Http\Client\NetworkExceptionInterface;
 use Psr\Http\Client\RequestExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 
-class TransportTest extends TestCase
+class PsrTransportTest extends TestCase
 {
     /**
      * @throws \BnplPartners\Factoring004\Exception\TransportException
@@ -434,9 +434,9 @@ class TransportTest extends TestCase
         ];
     }
 
-    private function createTransport(ClientInterface $client): Transport
+    private function createTransport(ClientInterface $client): TransportInterface
     {
-        return new Transport(
+        return new PsrTransport(
             new HttpFactory(),
             new HttpFactory(),
             new HttpFactory(),
@@ -444,4 +444,3 @@ class TransportTest extends TestCase
         );
     }
 }
-
