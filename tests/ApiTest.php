@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BnplPartners\Factoring004;
 
+use BnplPartners\Factoring004\ChangeStatus\ChangeStatusResource;
 use BnplPartners\Factoring004\Otp\OtpResource;
 use BnplPartners\Factoring004\PreApp\PreAppResource;
 use BnplPartners\Factoring004\Transport\TransportInterface;
@@ -73,6 +74,14 @@ class ApiTest extends TestCase
 
         $this->assertInstanceOf(OtpResource::class, $api->otp);
         $this->assertSame($api->otp, $api->otp);
+    }
+
+    public function testChangeStatus(): void
+    {
+        $api = new Api($this->transport, static::BASE_URI);
+
+        $this->assertInstanceOf(ChangeStatusResource::class, $api->changeStatus);
+        $this->assertSame($api->changeStatus, $api->changeStatus);
     }
 }
 
