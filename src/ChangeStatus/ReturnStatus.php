@@ -7,13 +7,13 @@ namespace BnplPartners\Factoring004\ChangeStatus;
 use MyCLabs\Enum\Enum;
 
 /**
- * @method static static RETURN()
+ * @method static static RE_TURN()
  * @method static static PARTRETURN()
  *
  * @psalm-immutable
  */
 final class ReturnStatus extends Enum
 {
-    private const RETURN = 'return';
+    private const RE_TURN = 'return';
     private const PARTRETURN = 'partReturn';
 }

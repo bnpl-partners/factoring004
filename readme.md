@@ -181,7 +181,7 @@ use BnplPartners\Factoring004\ChangeStatus\ReturnOrder;
 use BnplPartners\Factoring004\ChangeStatus\ReturnStatus;
 use BnplPartners\Factoring004\ChangeStatus\SuccessResponse;
 
-$orders = new MerchantsOrders('1', [new ReturnOrder('1', ReturnStatus::RETURN(), 6000)]);
+$orders = new MerchantsOrders('1', [new ReturnOrder('1', ReturnStatus::RE_TURN(), 6000)]);
 
 // or
 $orders = MerchantsOrders::createFromArray([

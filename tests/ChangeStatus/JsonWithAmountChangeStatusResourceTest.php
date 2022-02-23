@@ -18,7 +18,7 @@ class JsonWithAmountChangeStatusResourceTest extends AbstractResourceTest
     {
         $orders = MerchantsOrders::createFromArray([
             'merchantId' => '1',
-            'orders' => [['orderId' => '1000', 'status' => ReturnStatus::RETURN()->getValue(), 'amount' => 6000]],
+            'orders' => [['orderId' => '1000', 'status' => ReturnStatus::RE_TURN()->getValue(), 'amount' => 6000]],
         ]);
 
         $transport = $this->createMock(TransportInterface::class);
@@ -47,7 +47,7 @@ class JsonWithAmountChangeStatusResourceTest extends AbstractResourceTest
     {
         $orders = MerchantsOrders::createFromArray([
             'merchantId' => '1',
-            'orders' => [['orderId' => '1000', 'status' => ReturnStatus::RETURN()->getValue(), 'amount' => 6000]],
+            'orders' => [['orderId' => '1000', 'status' => ReturnStatus::RE_TURN()->getValue(), 'amount' => 6000]],
         ]);
 
         $transport = $this->createMock(TransportInterface::class);
@@ -76,7 +76,7 @@ class JsonWithAmountChangeStatusResourceTest extends AbstractResourceTest
     {
         $orders = MerchantsOrders::createFromArray([
             'merchantId' => '1',
-            'orders' => [['orderId' => '1000', 'status' => ReturnStatus::RETURN()->getValue(), 'amount' => 6000]],
+            'orders' => [['orderId' => '1000', 'status' => ReturnStatus::RE_TURN()->getValue(), 'amount' => 6000]],
         ]);
 
         $transport = $this->createMock(TransportInterface::class);
@@ -104,7 +104,7 @@ class JsonWithAmountChangeStatusResourceTest extends AbstractResourceTest
         $resource->changeStatusJson([
             MerchantsOrders::createFromArray([
                 'merchantId' => '1',
-                'orders' => [['orderId' => '1000', 'status' => ReturnStatus::RETURN()->getValue(), 'amount' => 6000]],
+                'orders' => [['orderId' => '1000', 'status' => ReturnStatus::RE_TURN()->getValue(), 'amount' => 6000]],
             ]),
         ]);
     }

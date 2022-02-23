@@ -8,9 +8,9 @@ use PHPUnit\Framework\TestCase;
 
 class ReturnStatusTest extends TestCase
 {
-    public function testRETURN(): void
+    public function testRE_TURN(): void
     {
-        $this->assertEquals(ReturnStatus::RETURN(), ReturnStatus::from('return'));
+        $this->assertEquals(ReturnStatus::RE_TURN(), ReturnStatus::from('return'));
     }
 
     public function testPARTRETURN(): void
