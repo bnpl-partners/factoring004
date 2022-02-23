@@ -8,8 +8,8 @@ use BnplPartners\Factoring004\Exception\AuthenticationException;
 use BnplPartners\Factoring004\Exception\ErrorResponseException;
 use BnplPartners\Factoring004\Exception\UnexpectedResponseException;
 use BnplPartners\Factoring004\Response\ErrorResponse;
+use BnplPartners\Factoring004\Transport\PsrTransport;
 use BnplPartners\Factoring004\Transport\Response as TransportResponse;
-use BnplPartners\Factoring004\Transport\Transport;
 use BnplPartners\Factoring004\Transport\TransportInterface;
 use GuzzleHttp\Psr7\HttpFactory;
 use GuzzleHttp\Psr7\Response;
@@ -311,7 +311,7 @@ abstract class AbstractResourceTest extends TestCase
 
     protected function createTransport(ClientInterface $client): TransportInterface
     {
-        return new Transport(
+        return new PsrTransport(
             new HttpFactory(),
             new HttpFactory(),
             new HttpFactory(),
