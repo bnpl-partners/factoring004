@@ -20,7 +20,7 @@ class DeliveryOrder extends AbstractMerchantOrder
      */
     public static function createFromArray(array $order): DeliveryOrder
     {
-        return new self($order['orderId'], DeliveryStatus::from($order['status']));
+        return new self($order['orderId'], new DeliveryStatus($order['status']));
     }
 
     public function getStatus(): DeliveryStatus
