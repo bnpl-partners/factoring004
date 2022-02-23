@@ -13,8 +13,8 @@ use InvalidArgumentException;
 
 class OAuthTokenManager implements OAuthTokenManagerInterface
 {
-    private const ACCESS_PATH = '/oauth2/token';
-    private const REVOKE_PATH = '/oauth2/revoke';
+    private const ACCESS_PATH = '/token';
+    private const REVOKE_PATH = '/revoke';
 
     private TransportInterface $transport;
     private string $baseUri;

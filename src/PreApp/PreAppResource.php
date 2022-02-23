@@ -60,6 +60,10 @@ class PreAppResource extends AbstractResource
             }
         }
 
+        if (isset($data['fault'])) {
+            $data = $data['fault'];
+        }
+
         if (empty($data['code'])) {
             throw new UnexpectedResponseException($response, $data['message'] ?? 'Unexpected response schema');
         }

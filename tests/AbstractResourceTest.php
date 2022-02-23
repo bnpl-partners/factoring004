@@ -48,6 +48,33 @@ abstract class AbstractResourceTest extends TestCase
     /**
      * @throws \BnplPartners\Factoring004\Exception\PackageException
      */
+    public function testWithMethodNotAllowedFault(): void
+    {
+        $data = [
+            'fault' => [
+                'code' => '405',
+                'type' => 'Status report',
+                'message' => 'Runtime Error',
+                'description' => 'Method not allowed for given API resource',
+            ],
+        ];
+
+        $client = $this->createStub(ClientInterface::class);
+        $client->method('sendRequest')
+            ->willReturn(new Response(405, ['Content-Type' => 'application/json'], json_encode($data)));
+
+        try {
+            $this->callResourceMethod($client);
+        } catch (ErrorResponseException $e) {
+            $this->assertEquals(405, $e->getCode());
+            $this->assertEquals('Runtime Error', $e->getMessage());
+            $this->assertEquals(ErrorResponse::createFromArray($data['fault']), $e->getErrorResponse());
+        }
+    }
+
+    /**
+     * @throws \BnplPartners\Factoring004\Exception\PackageException
+     */
     public function testWithMissingCredentialsError(): void
     {
         $data = [
@@ -66,6 +93,32 @@ abstract class AbstractResourceTest extends TestCase
             $this->assertEquals((int) $data['code'], $e->getCode());
             $this->assertEquals($data['message'], $e->getMessage());
             $this->assertEquals($data['description'], $e->getDescription());
+        }
+    }
+
+    /**
+     * @throws \BnplPartners\Factoring004\Exception\PackageException
+     */
+    public function testWithMissingCredentialsFault(): void
+    {
+        $data = [
+            'fault' => [
+                'code' => '900902',
+                'message' => 'Missing Credentials',
+                'description' => 'Invalid Credentials. Make sure your API invocation call has a header',
+            ],
+        ];
+
+        $client = $this->createStub(ClientInterface::class);
+        $client->method('sendRequest')
+            ->willReturn(new Response(401, ['Content-Type' => 'application/json'], json_encode($data)));
+
+        try {
+            $this->callResourceMethod($client);
+        } catch (AuthenticationException $e) {
+            $this->assertEquals((int) $data['fault']['code'], $e->getCode());
+            $this->assertEquals($data['fault']['message'], $e->getMessage());
+            $this->assertEquals($data['fault']['description'], $e->getDescription());
         }
     }
 
@@ -96,6 +149,32 @@ abstract class AbstractResourceTest extends TestCase
     /**
      * @throws \BnplPartners\Factoring004\Exception\PackageException
      */
+    public function testWithInvalidCredentialsFault(): void
+    {
+        $data = [
+            'fault' => [
+                'code' => '900901',
+                'message' => 'Invalid Credentials',
+                'description' => 'Invalid Credentials. Make sure you have provided the correct security credentials',
+            ],
+        ];
+
+        $client = $this->createStub(ClientInterface::class);
+        $client->method('sendRequest')
+            ->willReturn(new Response(401, ['Content-Type' => 'application/json'], json_encode($data)));
+
+        try {
+            $this->callResourceMethod($client);
+        } catch (AuthenticationException $e) {
+            $this->assertEquals((int) $data['fault']['code'], $e->getCode());
+            $this->assertEquals($data['fault']['message'], $e->getMessage());
+            $this->assertEquals($data['fault']['description'], $e->getDescription());
+        }
+    }
+
+    /**
+     * @throws \BnplPartners\Factoring004\Exception\PackageException
+     */
     public function testWithForbiddenError(): void
     {
         $data = [
@@ -114,6 +193,32 @@ abstract class AbstractResourceTest extends TestCase
             $this->assertEquals((int) $data['code'], $e->getCode());
             $this->assertEquals($data['message'], $e->getMessage());
             $this->assertEquals(ErrorResponse::createFromArray($data), $e->getErrorResponse());
+        }
+    }
+
+    /**
+     * @throws \BnplPartners\Factoring004\Exception\PackageException
+     */
+    public function testWithForbiddenFault(): void
+    {
+        $data = [
+            'fault' => [
+                'code' => '900908',
+                'message' => 'Resource forbidden ',
+                'description' => 'User is NOT authorized to access the Resource. API Subscription validation failed.',
+            ],
+        ];
+
+        $client = $this->createStub(ClientInterface::class);
+        $client->method('sendRequest')
+            ->willReturn(new Response(403, ['Content-Type' => 'application/json'], json_encode($data)));
+
+        try {
+            $this->callResourceMethod($client);
+        } catch (ErrorResponseException $e) {
+            $this->assertEquals((int) $data['fault']['code'], $e->getCode());
+            $this->assertEquals($data['fault']['message'], $e->getMessage());
+            $this->assertEquals(ErrorResponse::createFromArray($data['fault']), $e->getErrorResponse());
         }
     }
 
@@ -139,6 +244,31 @@ abstract class AbstractResourceTest extends TestCase
             $this->assertEquals($data['error']['code'], $e->getCode());
             $this->assertEquals($data['error']['message'], $e->getMessage());
             $this->assertEquals(ErrorResponse::createFromArray($data['error']), $e->getErrorResponse());
+        }
+    }
+
+    /**
+     * @throws \BnplPartners\Factoring004\Exception\PackageException
+     */
+    public function testWithUnexpectedSchemaFault(): void
+    {
+        $data = [
+            'fault' => [
+                'code' => 3,
+                'message' => 'proto: syntax error (line 1:16): unexpected token [',
+            ],
+        ];
+
+        $client = $this->createStub(ClientInterface::class);
+        $client->method('sendRequest')
+            ->willReturn(new Response(400, ['Content-Type' => 'application/json'], json_encode($data)));
+
+        try {
+            $this->callResourceMethod($client);
+        } catch (ErrorResponseException $e) {
+            $this->assertEquals($data['fault']['code'], $e->getCode());
+            $this->assertEquals($data['fault']['message'], $e->getMessage());
+            $this->assertEquals(ErrorResponse::createFromArray($data['fault']), $e->getErrorResponse());
         }
     }
 
