@@ -10,8 +10,9 @@
     * [Error handling](#error-handling)
     * [Exception Hierarchy](#exception-hierarchy)
 - [Advanced usage](#advanced-usage)
-    * [Resources](#resources)
+    * [PSR HTTP clients](#psr-http-clients)
     * [Transport layer](#transport-layer)
+    * [Resources](#resources)
 
 ## Requirements
 
@@ -21,61 +22,11 @@
 
 ## Installation
 
-First install any PSR-17 and PSR-18 packages.
-See [PSR-17 packages](https://packagist.org/providers/psr/http-factory-implementation) and
-[PSR-18 packages](https://packagist.org/providers/psr/http-client-implementation).
-
-For instance, we install popular Guzzle HTTP client. Since version 7 it has already implemented PSR-17 and PSR-18.
-
-```bash
-composer require guzzlehttp/guzzle
-```
-
-If you are using Guzzle 6 you should install PSR-17 and PSR-18 adapters also.
-
-```bash
-composer require http-interop/http-factory-guzzle mjelamanov/psr18-guzzle
-```
-
-Finally, install the package.
-
 ```bash
 composer require bnpl-partners/factoring004
 ```
 
 ## Usage
-
-### Create transport instance
-
-For Guzzle 7 client.
-
-```php
-use BnplPartners\Factoring004\Transport\Transport;
-
-require_once __DIR__ . '/vendor/autoload.php';
-
-$transport = new Transport(
-    new GuzzleHttp\Psr7\HttpFactory(),
-    new GuzzleHttp\Psr7\HttpFactory(),
-    new GuzzleHttp\Psr7\HttpFactory(),
-    new GuzzleHttp\Client(),
-);
-```
-
-For Guzzle 6 client.
-
-```php
-use BnplPartners\Factoring004\Transport\Transport;
-
-require_once __DIR__ . '/vendor/autoload.php';
-
-$transport = new Transport(
-    new Http\Factory\Guzzle\RequestFactory(),
-    new Http\Factory\Guzzle\StreamFactory(),
-    new Http\Factory\Guzzle\UriFactory(),
-    new Mjelamanov\GuzzlePsr18\Client(new GuzzleHttp\Client()),
-);
-```
 
 ### Create api instance
 
@@ -85,7 +36,7 @@ use BnplPartners\Factoring004\Auth\BearerTokenAuth;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-$api = Api::create($transport, 'http://api-domain.com', new BearerTokenAuth('Access Token'));
+$api = Api::create('http://api-domain.com', new BearerTokenAuth('Access Token'));
 ```
 
 ### Authentication
@@ -304,6 +255,97 @@ try {
 
 ## Advanced usage
 
+### PSR HTTP clients
+
+First install any PSR-17 and PSR-18 packages.
+See [PSR-17 packages](https://packagist.org/providers/psr/http-factory-implementation) and
+[PSR-18 packages](https://packagist.org/providers/psr/http-client-implementation).
+
+For instance, we install popular Guzzle HTTP client. Since version 7 it has already implemented PSR-17 and PSR-18.
+
+```bash
+composer require guzzlehttp/guzzle
+```
+
+For Guzzle 6 you may use ``GuzzleTransport`` or ``PsrTransport`` with additional PSR-17 and PSR-18 adapters. See bellow.
+
+Install PSR-17 and PSR-18 adapters for Guzzle 6.
+
+```bash
+composer require http-interop/http-factory-guzzle mjelamanov/psr18-guzzle
+```
+
+### Transport layer
+
+Transport is an abstraction layer over HTTP clients.
+
+For Guzzle 6 and 7
+
+```php
+use BnplPartners\Factoring004\Transport\GuzzleTransport;
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+$transport = new GuzzleTransport(new GuzzleHttp\Client());
+```
+
+For PSR-17 and PSR-18 client.
+
+```php
+use BnplPartners\Factoring004\Transport\PsrTransport;
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+$transport = new PsrTransport(
+    new GuzzleHttp\Psr7\HttpFactory(),
+    new GuzzleHttp\Psr7\HttpFactory(),
+    new GuzzleHttp\Psr7\HttpFactory(),
+    new GuzzleHttp\Client(),
+);
+```
+
+For Guzzle 6 client with PSR-17 and PSR-18 adapters.
+
+```php
+use BnplPartners\Factoring004\Transport\PsrTransport;
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+$transport = new PsrTransport(
+    new Http\Factory\Guzzle\RequestFactory(),
+    new Http\Factory\Guzzle\StreamFactory(),
+    new Http\Factory\Guzzle\UriFactory(),
+    new Mjelamanov\GuzzlePsr18\Client(new GuzzleHttp\Client()),
+);
+```
+
+For other PSR-17 and PSR-18 clients.
+
+```php
+use BnplPartners\Factoring004\Transport\PsrTransport;
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+$transport = new PsrTransport(
+    new RequestFactory(), // PSR-17 instance
+    new StreamFactory(), // PSR-17 instance
+    new UriFactory(), // PSR-17 instance
+    new Client() // PSR-18 instance
+);
+```
+
+You can create your own transport. Just implement ``BnplPartners\Factoring004\Transport\TransportInterface``.
+
+#### Send requests
+
+```php
+$response = $transport->post('/bnpl-partners/1.0/preapp', ['partnerData' => [...]], ['Content-Type' => 'application/json']);
+
+var_dump($response->getStatusCode()); // HTTP response status code
+var_dump($response->getHeaders()); // HTTP response headers
+var_dump($response->getBody()); // parsed HTTP response body
+```
+
 ### Resources
 
 Each resource is a set of grouped endpoints.
@@ -323,31 +365,6 @@ $response = $preApp->preApp(...);
 $otp = new OtpResource($transport, 'http://api-domain.com', new BearerTokenAuth('Access Token'));
 $response = $otp->sendOtp(...);
 ```
-
-### Transport layer
-
-Transport is an abstraction layer over HTTP clients.
-
-```php
-use BnplPartners\Factoring004\Transport\Transport;
-
-require_once __DIR__ . '/vendor/autoload.php';
-
-$transport = new Transport(
-    new RequestFactory(), // PSR-17 instance
-    new StreamFactory(), // PSR-17 instance
-    new UriFactory(), // PSR-17 instance
-    new Client() // PSR-18 instance
-);
-
-$response = $transport->post('/bnpl-partners/1.0/preapp', ['partnerData' => [...]], ['Content-Type' => 'application/json']);
-
-var_dump($response->getStatusCode()); // HTTP response status code
-var_dump($response->getHeaders()); // HTTP response headers
-var_dump($response->getBody()); // parsed HTTP response body
-```
-
-You can create your own transport. Just implement ``BnplPartners\Factoring004\Transport\TransportInterface``.
 
 ## Test
 
