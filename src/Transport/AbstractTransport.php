@@ -7,53 +7,32 @@ namespace BnplPartners\Factoring004\Transport;
 use BnplPartners\Factoring004\Auth\AuthenticationInterface;
 use BnplPartners\Factoring004\Auth\NoAuth;
 use BnplPartners\Factoring004\Exception\DataSerializationException;
-use BnplPartners\Factoring004\Exception\NetworkException;
-use BnplPartners\Factoring004\Exception\TransportException;
 use JsonException;
-use Psr\Http\Client\ClientExceptionInterface;
-use Psr\Http\Client\ClientInterface;
-use Psr\Http\Client\NetworkExceptionInterface;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
+use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 use Psr\Http\Message\StreamInterface;
-use Psr\Http\Message\UriFactoryInterface;
 use Psr\Http\Message\UriInterface;
 
-class Transport implements TransportInterface
+abstract class AbstractTransport implements TransportInterface
 {
     protected const METHODS_WITHOUT_BODY = ['GET', 'HEAD', 'OPTIONS', 'DELETE'];
     protected const DEFAULT_CONTENT_TYPE = 'application/json';
-
-    protected RequestFactoryInterface $requestFactory;
-    protected StreamFactoryInterface $streamFactory;
-    protected UriFactoryInterface $uriFactory;
-    protected ClientInterface $client;
 
     /**
      * @var array<string, string>
      */
     protected array $headers = [];
-    protected UriInterface $baseUri;
+    protected ?UriInterface $baseUri = null;
     protected AuthenticationInterface $authentication;
 
-    public function __construct(
-        RequestFactoryInterface $requestFactory,
-        StreamFactoryInterface $streamFactory,
-        UriFactoryInterface $uriFactory,
-        ClientInterface $client
-    ) {
-        $this->requestFactory = $requestFactory;
-        $this->streamFactory = $streamFactory;
-        $this->uriFactory = $uriFactory;
-        $this->client = $client;
-        $this->baseUri = $uriFactory->createUri();
+    public function __construct()
+    {
         $this->authentication = new NoAuth();
     }
 
     public function setBaseUri(string $uri): TransportInterface
     {
-        $this->baseUri = $this->uriFactory->createUri($uri);
+        $this->baseUri = $this->createUri($uri);
         return $this;
     }
 
@@ -95,7 +74,7 @@ class Transport implements TransportInterface
         $isWithoutBody = in_array($method, static::METHODS_WITHOUT_BODY, true);
         $query = $isWithoutBody ? $data : [];
 
-        $request = $this->createRequest($method, $path, $query);
+        $request = $this->createRequest($method, $this->prepareUri($path, $query));
         $request = $this->mergeRequestHeaders($request, $headers);
 
         if (!$isWithoutBody) {
@@ -109,17 +88,27 @@ class Transport implements TransportInterface
     /**
      * @param array<string, mixed> $query
      */
-    protected function createRequest(string $method, string $path, array $query = []): RequestInterface
+    protected function prepareUri(string $path, array $query): UriInterface
     {
-        $path = rtrim($this->baseUri->getPath(), '/') . '/' . ltrim($path, '/');
-        $uri = $this->baseUri->withPath($path);
+        $uri = $this->baseUri ?? $this->createUri('/');
 
-        if ($query) {
-            $uri = $uri->withQuery(http_build_query($query));
-        }
+        $path = rtrim($uri->getPath(), '/') . '/' . ltrim($path, '/');
+        $uri = $uri->withPath($path);
 
-        return $this->requestFactory->createRequest($method, $uri);
+        return $query ? $uri->withQuery(http_build_query($query)) : $uri;
     }
+
+    abstract protected function createRequest(string $method, UriInterface $uri): RequestInterface;
+
+    abstract protected function createStream(string $content): StreamInterface;
+
+    abstract protected function createUri(string $uri): UriInterface;
+
+    /**
+     * @throws \BnplPartners\Factoring004\Exception\NetworkException
+     * @throws \BnplPartners\Factoring004\Exception\TransportException
+     */
+    abstract protected function sendRequest(RequestInterface $request): PsrResponseInterface;
 
     /**
      * @param array<string, string> $headers
@@ -163,30 +152,10 @@ class Transport implements TransportInterface
         throw new DataSerializationException('Unsupported content type ' . $contentType);
     }
 
-    protected function createStream(string $content): StreamInterface
-    {
-        return $this->streamFactory->createStream($content);
-    }
-
-    /**
-     * @throws \BnplPartners\Factoring004\Exception\NetworkException
-     * @throws \BnplPartners\Factoring004\Exception\TransportException
-     */
-    protected function sendRequest(RequestInterface $request): \Psr\Http\Message\ResponseInterface
-    {
-        try {
-            return $this->client->sendRequest($request);
-        } catch (NetworkExceptionInterface $e) {
-            throw new NetworkException('Network issues of ' . $e->getRequest()->getUri(), 0, $e);
-        } catch (ClientExceptionInterface $e) {
-            throw new TransportException('Unable to send request to ' . $request->getUri(), 0, $e);
-        }
-    }
-
     /**
      * @throws \BnplPartners\Factoring004\Exception\DataSerializationException
      */
-    protected function convertResponse(\Psr\Http\Message\ResponseInterface $response): ResponseInterface
+    protected function convertResponse(PsrResponseInterface $response): ResponseInterface
     {
         return Response::createFromPsrResponse($response);
     }

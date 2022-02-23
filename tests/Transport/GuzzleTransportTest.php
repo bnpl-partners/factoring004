@@ -11,16 +11,19 @@ use BnplPartners\Factoring004\Auth\BearerTokenAuth;
 use BnplPartners\Factoring004\Exception\DataSerializationException;
 use BnplPartners\Factoring004\Exception\NetworkException;
 use BnplPartners\Factoring004\Exception\TransportException;
-use GuzzleHttp\Psr7\HttpFactory;
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\ServerException;
+use GuzzleHttp\Exception\TooManyRedirectsException;
+use GuzzleHttp\Exception\TransferException;
+use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response as PsrResponse;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Client\ClientExceptionInterface;
-use Psr\Http\Client\ClientInterface;
-use Psr\Http\Client\NetworkExceptionInterface;
-use Psr\Http\Client\RequestExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 
-class TransportTest extends TestCase
+class GuzzleTransportTest extends TestCase
 {
     /**
      * @throws \BnplPartners\Factoring004\Exception\TransportException
@@ -30,7 +33,7 @@ class TransportTest extends TestCase
         $client = $this->createMock(ClientInterface::class);
 
         $client->expects($this->once())
-            ->method('sendRequest')
+            ->method('send')
             ->with($this->callback(fn($request) => (string) $request->getUri() === '/'))
             ->willReturn(new PsrResponse(200, [], '{}'));
 
@@ -46,7 +49,7 @@ class TransportTest extends TestCase
         $client = $this->createMock(ClientInterface::class);
 
         $client->expects($this->once())
-            ->method('sendRequest')
+            ->method('send')
             ->with($this->callback(fn($request) => (string) $request->getUri() === 'http://example.com/'))
             ->willReturn(new PsrResponse(200, [], '{}'));
 
@@ -63,7 +66,7 @@ class TransportTest extends TestCase
         $client = $this->createMock(ClientInterface::class);
 
         $client->expects($this->once())
-            ->method('sendRequest')
+            ->method('send')
             ->with($this->callback(fn($request) => (string) $request->getUri() === 'http://example.com/1.0/preapp'))
             ->willReturn(new PsrResponse(200, [], '{}'));
 
@@ -80,7 +83,7 @@ class TransportTest extends TestCase
         $client = $this->createMock(ClientInterface::class);
 
         $client->expects($this->once())
-            ->method('sendRequest')
+            ->method('send')
             ->with($this->callback(fn($request) => empty($request->getHeaders())))
             ->willReturn(new PsrResponse(200, [], '{}'));
 
@@ -102,7 +105,7 @@ class TransportTest extends TestCase
         ];
 
         $client->expects($this->once())
-            ->method('sendRequest')
+            ->method('send')
             ->with($this->callback(fn($request) => $request->getHeaders() === array_map(fn($item) => [$item], $headers)))
             ->willReturn(new PsrResponse(200, [], '{}'));
 
@@ -118,7 +121,7 @@ class TransportTest extends TestCase
     {
         $client = $this->createMock(ClientInterface::class);
         $client->expects($this->once())
-            ->method('sendRequest')
+            ->method('send')
             ->with($this->callback(fn($request) => $request->getHeaders() === [
                     'Content-Type' => ['application/x-www-form-urlencoded'],
                     'Accept' => ['application/json'],
@@ -145,7 +148,7 @@ class TransportTest extends TestCase
     ): void {
         $client = $this->createMock(ClientInterface::class);
         $client->expects($this->once())
-            ->method('sendRequest')
+            ->method('send')
             ->with(
                 $this->callback(fn($request) => $request->getHeaderLine($expectedHeaderName) === $expectedHeaderValue)
             )
@@ -164,7 +167,7 @@ class TransportTest extends TestCase
     {
         $client = $this->createMock(ClientInterface::class);
         $client->expects($this->once())
-            ->method('sendRequest')
+            ->method('send')
             ->with($this->callback(fn($request) => $request->getUri()->getPath() === '/test'))
             ->willReturn(new PsrResponse(200, [], '{"status": true, "message": "text"}'));
 
@@ -186,7 +189,7 @@ class TransportTest extends TestCase
         ];
 
         $client->expects($this->once())
-            ->method('sendRequest')
+            ->method('send')
             ->with($this->callback(fn($request) => $request->getUri()->getQuery() === http_build_query($query)))
             ->willReturn(new PsrResponse(200, [], '{"status": true, "message": "text"}'));
 
@@ -201,7 +204,7 @@ class TransportTest extends TestCase
     {
         $client = $this->createMock(ClientInterface::class);
         $client->expects($this->once())
-            ->method('sendRequest')
+            ->method('send')
             ->with($this->callback(function (RequestInterface $request) {
                 return $request->getUri()->getPath() === '/test' && empty($request->getBody()->getContents());
             }))
@@ -219,7 +222,7 @@ class TransportTest extends TestCase
     {
         $client = $this->createMock(ClientInterface::class);
         $client->expects($this->once())
-            ->method('sendRequest')
+            ->method('send')
             ->with($this->callback(function (RequestInterface $request) {
                 return $request->getBody()->getContents() === '{"a":15,"b":40,"c":[1,2,3]}';
             }))
@@ -238,7 +241,7 @@ class TransportTest extends TestCase
 
         $client = $this->createMock(ClientInterface::class);
         $client->expects($this->once())
-            ->method('sendRequest')
+            ->method('send')
             ->with($this->callback(function (RequestInterface $request) use ($data) {
                 return $request->getHeaderLine('Content-Type') === 'application/x-www-form-urlencoded'
                     && $request->getBody()->getContents() === http_build_query($data);
@@ -257,7 +260,7 @@ class TransportTest extends TestCase
         $client = $this->createMock(ClientInterface::class);
 
         $client->expects($this->once())
-            ->method('sendRequest')
+            ->method('send')
             ->with($this->callback(function (RequestInterface $request) use ($method, $expectedQuery) {
                 return $request->getMethod() === $method && $request->getUri()->getQuery() === $expectedQuery;
             }))
@@ -280,7 +283,7 @@ class TransportTest extends TestCase
         $client = $this->createMock(ClientInterface::class);
 
         $client->expects($this->once())
-            ->method('sendRequest')
+            ->method('send')
             ->with($this->callback(function (RequestInterface $request) use ($contentType, $method, $expectedData) {
                 return $request->getHeaderLine('Content-Type') === $contentType
                     && $request->getMethod() === $method && $request->getBody()->getContents() === $expectedData;
@@ -292,19 +295,58 @@ class TransportTest extends TestCase
     }
 
     /**
-     * @dataProvider psrClientExceptionsProvider
+     * @dataProvider clientExceptionsProvider
      */
     public function testWithClientException(string $exceptionClass, string $expectedExceptionClass): void
     {
         $client = $this->createMock(ClientInterface::class);
 
         $client->expects($this->once())
-            ->method('sendRequest')
+            ->method('send')
             ->willThrowException($this->createStub($exceptionClass));
 
         $this->expectException($expectedExceptionClass);
 
         $transport = $this->createTransport($client);
+        $transport->get('/test');
+    }
+
+    /**
+     * @dataProvider requestExceptionsProvider
+     *
+     * @throws \BnplPartners\Factoring004\Exception\TransportException
+     */
+    public function testWithRequestException(TransferException $e, int $status): void
+    {
+        $client = $this->createMock(ClientInterface::class);
+
+        $client->expects($this->once())
+            ->method('send')
+            ->willThrowException($e);
+
+        $transport = $this->createTransport($client);
+        $response = $transport->get('/test');
+
+        $this->assertEquals($status, $response->getStatusCode());
+    }
+
+    /**
+     * @dataProvider emptyRequestExceptionsProvider
+     *
+     * @throws \BnplPartners\Factoring004\Exception\TransportException
+     */
+    public function testWithEmptyRequestException(TransferException $e, string $expectedExceptionClass): void
+    {
+        $client = $this->createMock(ClientInterface::class);
+
+        $client->expects($this->once())
+            ->method('send')
+            ->willThrowException($e);
+
+        $transport = $this->createTransport($client);
+
+        $this->expectException($expectedExceptionClass);
+
         $transport->get('/test');
     }
 
@@ -323,7 +365,7 @@ class TransportTest extends TestCase
         $client = $this->createMock(ClientInterface::class);
 
         $client->expects($this->once())
-            ->method('sendRequest')
+            ->method('send')
             ->willReturn(new PsrResponse(200, [], '{"a:15}'));
 
         $this->expectException(DataSerializationException::class);
@@ -425,23 +467,33 @@ class TransportTest extends TestCase
         ];
     }
 
-    public function psrClientExceptionsProvider(): array
+    public function clientExceptionsProvider(): array
     {
         return [
-            [NetworkExceptionInterface::class, NetworkException::class],
-            [RequestExceptionInterface::class, TransportException::class],
-            [ClientExceptionInterface::class, TransportException::class],
+            [ConnectException::class, NetworkException::class],
+            [TransferException::class, TransportException::class],
         ];
     }
 
-    private function createTransport(ClientInterface $client): Transport
+    public function requestExceptionsProvider(): array
     {
-        return new Transport(
-            new HttpFactory(),
-            new HttpFactory(),
-            new HttpFactory(),
-            $client,
-        );
+        return [
+            [new ClientException('Test', new Request('GET', '/'), new \GuzzleHttp\Psr7\Response(400)), 400],
+            [new ServerException('Test', new Request('GET', '/'), new \GuzzleHttp\Psr7\Response(500)), 500],
+            [new RequestException('Test', new Request('GET', '/'), new \GuzzleHttp\Psr7\Response(400)), 400],
+        ];
+    }
+
+    public function emptyRequestExceptionsProvider(): array
+    {
+        return [
+            [new RequestException('Test', new Request('GET', '/')), TransportException::class],
+            [new TooManyRedirectsException('Test', new Request('GET', '/')), TransportException::class],
+        ];
+    }
+
+    private function createTransport(ClientInterface $client): TransportInterface
+    {
+        return new GuzzleTransport($client);
     }
 }
-

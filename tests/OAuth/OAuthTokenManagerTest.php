@@ -6,7 +6,7 @@ namespace BnplPartners\Factoring004\OAuth;
 
 use BadMethodCallException;
 use BnplPartners\Factoring004\Exception\OAuthException;
-use BnplPartners\Factoring004\Transport\Transport;
+use BnplPartners\Factoring004\Transport\PsrTransport;
 use BnplPartners\Factoring004\Transport\TransportInterface;
 use GuzzleHttp\Psr7\HttpFactory;
 use GuzzleHttp\Psr7\Response;
@@ -121,7 +121,7 @@ class OAuthTokenManagerTest extends TestCase
 
     public function createTransport(ClientInterface $client): TransportInterface
     {
-        return new Transport(
+        return new PsrTransport(
             new HttpFactory(),
             new HttpFactory(),
             new HttpFactory(),
