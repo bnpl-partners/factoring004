@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace BnplPartners\Factoring004\Transport;
 
 use BnplPartners\Factoring004\Exception\DataSerializationException;
-use JsonException;
 use Psr\Http\Message\ResponseInterface as PsrResponse;
 
 /**
@@ -43,16 +42,21 @@ class Response implements ResponseInterface
     public static function createFromPsrResponse(PsrResponse $response): Response
     {
         $content = (string) $response->getBody();
+        $data = [];
 
-        try {
-            return new self(
-                $response->getStatusCode(),
-                array_map(fn(array $values) => implode(', ', $values), $response->getHeaders()),
-                $content ? json_decode($content, true, 512, JSON_THROW_ON_ERROR) : [],
-            );
-        } catch (JsonException $e) {
-            throw new DataSerializationException('Response has invalid JSON', 0, $e);
+        if ($content) {
+            $data = json_decode($content, true);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new DataSerializationException('Response has invalid JSON');
+            }
         }
+
+        return new self(
+            $response->getStatusCode(),
+            array_map(fn(array $values) => implode(', ', $values), $response->getHeaders()),
+            $data,
+        );
     }
 
     public function getStatusCode(): int

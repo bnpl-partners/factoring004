@@ -7,7 +7,6 @@ namespace BnplPartners\Factoring004\Transport;
 use BnplPartners\Factoring004\Auth\AuthenticationInterface;
 use BnplPartners\Factoring004\Auth\NoAuth;
 use BnplPartners\Factoring004\Exception\DataSerializationException;
-use JsonException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 use Psr\Http\Message\StreamInterface;
@@ -138,11 +137,13 @@ abstract class AbstractTransport implements TransportInterface
         $contentType = $request->getHeaderLine('Content-Type') ?: static::DEFAULT_CONTENT_TYPE;
 
         if (strpos($contentType, 'json') !== false) {
-            try {
-                return json_encode($data, JSON_THROW_ON_ERROR);
-            } catch (JsonException $e) {
-                throw new DataSerializationException('Invalid JSON format', 0, $e);
+            $json = json_encode($data);
+
+            if (json_last_error() === JSON_ERROR_NONE) {
+                return $json;
             }
+
+            throw new DataSerializationException('Invalid JSON format');
         }
 
         if ($contentType === 'application/x-www-form-urlencoded') {
