@@ -8,6 +8,7 @@ use BnplPartners\Factoring004\Auth\AuthenticationInterface;
 use BnplPartners\Factoring004\ChangeStatus\ChangeStatusResource;
 use BnplPartners\Factoring004\Otp\OtpResource;
 use BnplPartners\Factoring004\PreApp\PreAppResource;
+use BnplPartners\Factoring004\Transport\GuzzleTransport;
 use BnplPartners\Factoring004\Transport\TransportInterface;
 use OutOfBoundsException;
 
@@ -23,21 +24,23 @@ class Api
     private ChangeStatusResource $changeStatus;
 
     public function __construct(
-        TransportInterface $transport,
         string $baseUri,
-        ?AuthenticationInterface $authentication = null
+        ?AuthenticationInterface $authentication = null,
+        ?TransportInterface $transport = null
     ) {
+        $transport = $transport ?? new GuzzleTransport();
+
         $this->preApps = new PreAppResource($transport, $baseUri, $authentication);
         $this->otp = new OtpResource($transport, $baseUri, $authentication);
         $this->changeStatus = new ChangeStatusResource($transport, $baseUri, $authentication);
     }
 
     public static function create(
-        TransportInterface $transport,
         string $baseUri,
-        ?AuthenticationInterface $authentication = null
+        ?AuthenticationInterface $authentication = null,
+        ?TransportInterface $transport = null
     ): Api {
-        return new self($transport, $baseUri, $authentication);
+        return new self($baseUri, $authentication, $transport);
     }
 
     public function __get(string $name): AbstractResource
