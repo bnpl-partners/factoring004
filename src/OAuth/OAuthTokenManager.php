@@ -8,6 +8,7 @@ use BadMethodCallException;
 use BnplPartners\Factoring004\Auth\BasicAuth;
 use BnplPartners\Factoring004\Exception\OAuthException;
 use BnplPartners\Factoring004\Exception\TransportException;
+use BnplPartners\Factoring004\Transport\GuzzleTransport;
 use BnplPartners\Factoring004\Transport\TransportInterface;
 use InvalidArgumentException;
 
@@ -21,8 +22,12 @@ class OAuthTokenManager implements OAuthTokenManagerInterface
     private string $consumerKey;
     private string $consumerSecret;
 
-    public function __construct(TransportInterface $transport, string $baseUri, string $consumerKey, string $consumerSecret)
-    {
+    public function __construct(
+        string $baseUri,
+        string $consumerKey,
+        string $consumerSecret,
+        ?TransportInterface $transport = null
+    ) {
         if (!$baseUri) {
             throw new InvalidArgumentException('Base URI cannot be empty');
         }
@@ -35,7 +40,7 @@ class OAuthTokenManager implements OAuthTokenManagerInterface
             throw new InvalidArgumentException('Consumer secret cannot be empty');
         }
 
-        $this->transport = $transport;
+        $this->transport = $transport ?? new GuzzleTransport();
         $this->baseUri = $baseUri;
         $this->consumerKey = $consumerKey;
         $this->consumerSecret = $consumerSecret;
@@ -54,7 +59,11 @@ class OAuthTokenManager implements OAuthTokenManagerInterface
             throw new OAuthException('Cannot generate an access token', 0, $e);
         }
 
-        return OAuthToken::createFromArray($response->getBody());
+        if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
+            return OAuthToken::createFromArray($response->getBody());
+        }
+
+        throw new OAuthException('Cannot generate an access token');
     }
 
     public function revokeToken(): void
