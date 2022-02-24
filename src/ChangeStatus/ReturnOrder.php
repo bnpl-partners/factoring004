@@ -24,7 +24,7 @@ class ReturnOrder extends AbstractMerchantOrder
      */
     public static function createFromArray(array $order): ReturnOrder
     {
-        return new self($order['orderId'], ReturnStatus::from($order['status']), $order['amount']);
+        return new self($order['orderId'], new ReturnStatus($order['status']), $order['amount']);
     }
 
     public function getAmount(): int

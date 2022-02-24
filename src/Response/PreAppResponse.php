@@ -30,7 +30,7 @@ class PreAppResponse implements JsonSerializable, ArrayInterface
      */
     public static function createFromArray(array $data): PreAppResponse
     {
-        return new self(Status::from($data['status']), $data['preappId'], $data['redirectLink']);
+        return new self(new Status($data['status']), $data['preappId'], $data['redirectLink']);
     }
 
     public function getStatus(): Status
