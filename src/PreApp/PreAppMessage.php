@@ -22,13 +22,22 @@ class PreAppMessage implements ArrayInterface
     private ?DateTimeInterface $deliveryDate = null;
     private ?DeliveryPoint $deliveryPoint = null;
 
+    /**
+     * @var \BnplPartners\Factoring004\PreApp\Item[]
+     */
+    private array $items;
+
+    /**
+     * @param \BnplPartners\Factoring004\PreApp\Item[] $items
+     */
     public function __construct(
         PartnerData $partnerData,
         string $billNumber,
         int $billAmount,
         int $itemsQuantity,
         string $successRedirect,
-        string $postLink
+        string $postLink,
+        array $items
     ) {
         if ($billAmount <= 0) {
             throw new InvalidArgumentException('billAmount must be greater than 0');
@@ -44,6 +53,7 @@ class PreAppMessage implements ArrayInterface
         $this->itemsQuantity = $itemsQuantity;
         $this->successRedirect = $successRedirect;
         $this->postLink = $postLink;
+        $this->items = $items;
     }
 
     /**
@@ -71,6 +81,14 @@ class PreAppMessage implements ArrayInterface
                house?: string,
                flat?: string,
            },
+           items: array{
+              itemId: string,
+              itemName: string,
+              itemCategory: string,
+              itemQuantity: int,
+              itemPrice: int,
+              itemSum: int,
+           }[]
      * } $data
      *
      * @throws \InvalidArgumentException
@@ -92,6 +110,7 @@ class PreAppMessage implements ArrayInterface
             $data['itemsQuantity'],
             $data['successRedirect'],
             $data['postLink'],
+            array_map(fn(array $item) => Item::createFromArray($item), $data['items']),
         );
 
         if (isset($data['failRedirect'])) {
@@ -207,6 +226,14 @@ class PreAppMessage implements ArrayInterface
     }
 
     /**
+     * @return \BnplPartners\Factoring004\PreApp\Item[]
+     */
+    public function getItems(): array
+    {
+        return $this->items;
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public function toArray(): array
@@ -227,6 +254,7 @@ class PreAppMessage implements ArrayInterface
             'failRedirect' => $this->getFailRedirect(),
             'phoneNumber' => $this->getPhoneNumber(),
             'deliveryPoint' => $deliveryPoint ? $deliveryPoint->toArray() : null,
+            'items' => array_map(fn(Item $item) => $item->toArray(), $this->getItems()),
         ]);
     }
 }
