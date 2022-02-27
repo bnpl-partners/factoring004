@@ -18,6 +18,16 @@ class PreAppMessageTest extends TestCase
         'itemsQuantity' => 1,
         'successRedirect' => 'http://example.com/success',
         'postLink' => 'http://example.com/internal',
+        'items' => [
+            [
+                'itemId' => '1',
+                'itemName' => 'test',
+                'itemCategory' => '1',
+                'itemQuantity' => 1,
+                'itemPrice' => 6000,
+                'itemSum' => 8000,
+            ],
+        ],
     ];
 
     private PreAppMessage $message;
@@ -32,7 +42,8 @@ class PreAppMessageTest extends TestCase
             6000,
             1,
             'http://example.com/success',
-            'http://example.com/internal'
+            'http://example.com/internal',
+            [Item::createFromArray(static::REQUIRED_DATA['items'][0])],
         );
     }
 
@@ -50,7 +61,8 @@ class PreAppMessageTest extends TestCase
             $billAmount,
             1,
             'http://example.com/success',
-            'http://example.com/internal'
+            'http://example.com/internal',
+            [Item::createFromArray(static::REQUIRED_DATA['items'][0])],
         );
     }
 
@@ -68,7 +80,8 @@ class PreAppMessageTest extends TestCase
             6000,
             $itemsQuantity,
             'http://example.com/success',
-            'http://example.com/internal'
+            'http://example.com/internal',
+            [Item::createFromArray(static::REQUIRED_DATA['items'][0])],
         );
     }
 
@@ -243,16 +256,14 @@ class PreAppMessageTest extends TestCase
         $this->assertEquals($deliveryPoint, $this->message->getDeliveryPoint());
     }
 
+    public function testGetItems(): void
+    {
+        $this->assertEquals([Item::createFromArray(static::REQUIRED_DATA['items'][0])], $this->message->getItems());
+    }
+
     public function testToArray(): void
     {
-        $expected = [
-            'partnerData' => ['partnerName' => 'a', 'partnerCode' => 'b', 'pointCode' => 'c'],
-            'billNumber' => '1',
-            'billAmount' => 6000,
-            'itemsQuantity' => 1,
-            'successRedirect' => 'http://example.com/success',
-            'postLink' => 'http://example.com/internal',
-        ];
+        $expected = static::REQUIRED_DATA;
         $this->assertEquals($expected, $this->message->toArray());
 
         $this->message->setFailRedirect('http://example.com/failed');
@@ -261,13 +272,7 @@ class PreAppMessageTest extends TestCase
         $this->message->setDeliveryDate($deliveryDate = new DateTime());
         $this->message->setDeliveryPoint(DeliveryPoint::createFromArray(['flat' => '10', 'house' => '15']));
 
-        $expected = [
-            'partnerData' => ['partnerName' => 'a', 'partnerCode' => 'b', 'pointCode' => 'c'],
-            'billNumber' => '1',
-            'billAmount' => 6000,
-            'itemsQuantity' => 1,
-            'successRedirect' => 'http://example.com/success',
-            'postLink' => 'http://example.com/internal',
+        $expected = static::REQUIRED_DATA + [
             'failRedirect' => 'http://example.com/failed',
             'phoneNumber' => '77771234567',
             'expiresAt' => $expiresAt->format(DateTimeInterface::ISO8601),
@@ -280,6 +285,7 @@ class PreAppMessageTest extends TestCase
                 'district' => '',
                 'region' => '',
             ],
+            'items' => static::REQUIRED_DATA['items'],
         ];
         $this->assertEquals($expected, $this->message->toArray());
     }

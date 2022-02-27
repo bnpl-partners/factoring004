@@ -74,6 +74,7 @@ $tokenManager = new CacheOAuthTokenManager($tokenManager, $cache, 'cache key');
 Create preApp
 
 ```php
+use BnplPartners\Factoring004\PreApp\Item;
 use BnplPartners\Factoring004\PreApp\PreAppMessage;
 use BnplPartners\Factoring004\PreApp\PartnerData;
 
@@ -84,6 +85,7 @@ $message = new PreAppMessage(
     1,
     'http://your-store.com/success',
     'http://your-store.com/internal',
+    [new Item('1', 'test', '1', 1, 6000, 8000)],
 );
 
 // Or
@@ -98,6 +100,16 @@ $message = PreAppMessage::createFromArray([
     'itemsQuantity' => 1,
     'successRedirect' => 'http://your-store.com/success',
     'postLink' => 'http://your-store.com/internal',
+    'items' => [
+        [
+            'itemId' => '1',
+            'itemName' => 'test',
+            'itemCategory' => '1',
+            'itemQuantity' => 1,
+            'itemPrice' => 6000,
+            'itemSum' => 8000,
+        ],
+    ],
 ]);
 
 //Send request and receive response
