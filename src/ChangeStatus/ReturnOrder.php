@@ -9,7 +9,10 @@ namespace BnplPartners\Factoring004\ChangeStatus;
  */
 class ReturnOrder extends AbstractMerchantOrder
 {
-    private int $amount;
+    /**
+     * @var int
+     */
+    private $amount;
 
     public function __construct(string $orderId, ReturnStatus $status, int $amount)
     {
@@ -22,7 +25,7 @@ class ReturnOrder extends AbstractMerchantOrder
      * @param array<string, mixed> $order
      * @psalm-param array{orderId: string, status: string, amount: int} $order
      */
-    public static function createFromArray(array $order): ReturnOrder
+    public static function createFromArray($order): ReturnOrder
     {
         return new self($order['orderId'], new ReturnStatus($order['status']), $order['amount']);
     }

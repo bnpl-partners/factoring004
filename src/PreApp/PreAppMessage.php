@@ -10,22 +10,55 @@ use InvalidArgumentException;
 
 class PreAppMessage implements ArrayInterface
 {
-    private PartnerData $partnerData;
-    private string $billNumber;
-    private int $billAmount;
-    private int $itemsQuantity;
-    private string $successRedirect;
-    private string $failRedirect = '';
-    private string $postLink;
-    private string $phoneNumber = '';
-    private ?DateTimeInterface $expiresAt = null;
-    private ?DateTimeInterface $deliveryDate = null;
-    private ?DeliveryPoint $deliveryPoint = null;
+    /**
+     * @var \BnplPartners\Factoring004\PreApp\PartnerData
+     */
+    private $partnerData;
+    /**
+     * @var string
+     */
+    private $billNumber;
+    /**
+     * @var int
+     */
+    private $billAmount;
+    /**
+     * @var int
+     */
+    private $itemsQuantity;
+    /**
+     * @var string
+     */
+    private $successRedirect;
+    /**
+     * @var string
+     */
+    private $failRedirect = '';
+    /**
+     * @var string
+     */
+    private $postLink;
+    /**
+     * @var string
+     */
+    private $phoneNumber = '';
+    /**
+     * @var \DateTimeInterface|null
+     */
+    private $expiresAt;
+    /**
+     * @var \DateTimeInterface|null
+     */
+    private $deliveryDate;
+    /**
+     * @var \BnplPartners\Factoring004\PreApp\DeliveryPoint|null
+     */
+    private $deliveryPoint;
 
     /**
      * @var \BnplPartners\Factoring004\PreApp\Item[]
      */
-    private array $items;
+    private $items;
 
     /**
      * @param \BnplPartners\Factoring004\PreApp\Item[] $items
@@ -93,7 +126,7 @@ class PreAppMessage implements ArrayInterface
      *
      * @throws \InvalidArgumentException
      */
-    public static function createFromArray(array $data): PreAppMessage
+    public static function createFromArray($data): PreAppMessage
     {
         $requiredKeys = ['partnerData', 'billNumber', 'billAmount', 'itemsQuantity', 'successRedirect', 'postLink'];
 
@@ -103,15 +136,9 @@ class PreAppMessage implements ArrayInterface
             }
         }
 
-        $object = new self(
-            PartnerData::createFromArray($data['partnerData']),
-            $data['billNumber'],
-            $data['billAmount'],
-            $data['itemsQuantity'],
-            $data['successRedirect'],
-            $data['postLink'],
-            array_map(fn(array $item) => Item::createFromArray($item), $data['items']),
-        );
+        $object = new self(PartnerData::createFromArray($data['partnerData']), $data['billNumber'], $data['billAmount'], $data['itemsQuantity'], $data['successRedirect'], $data['postLink'], array_map(function (array $item) {
+            return Item::createFromArray($item);
+        }, $data['items']));
 
         if (isset($data['failRedirect'])) {
             $object->setFailRedirect($data['failRedirect']);
@@ -136,13 +163,19 @@ class PreAppMessage implements ArrayInterface
         return $object;
     }
 
-    public function setFailRedirect(string $failRedirect): PreAppMessage
+    /**
+     * @param string $failRedirect
+     */
+    public function setFailRedirect($failRedirect): PreAppMessage
     {
         $this->failRedirect = $failRedirect;
         return $this;
     }
 
-    public function setPhoneNumber(string $phoneNumber): PreAppMessage
+    /**
+     * @param string $phoneNumber
+     */
+    public function setPhoneNumber($phoneNumber): PreAppMessage
     {
         if (!preg_match('/^77\d{9}$/', $phoneNumber)) {
             throw new InvalidArgumentException('phoneNumber is invalid');
@@ -152,19 +185,28 @@ class PreAppMessage implements ArrayInterface
         return $this;
     }
 
-    public function setDeliveryPoint(DeliveryPoint $deliveryPoint): PreAppMessage
+    /**
+     * @param \BnplPartners\Factoring004\PreApp\DeliveryPoint $deliveryPoint
+     */
+    public function setDeliveryPoint($deliveryPoint): PreAppMessage
     {
         $this->deliveryPoint = $deliveryPoint;
         return $this;
     }
 
-    public function setExpiresAt(DateTimeInterface $expiresAt): PreAppMessage
+    /**
+     * @param \DateTimeInterface $expiresAt
+     */
+    public function setExpiresAt($expiresAt): PreAppMessage
     {
         $this->expiresAt = $expiresAt;
         return $this;
     }
 
-    public function setDeliveryDate(DateTimeInterface $deliveryDate): PreAppMessage
+    /**
+     * @param \DateTimeInterface $deliveryDate
+     */
+    public function setDeliveryDate($deliveryDate): PreAppMessage
     {
         $this->deliveryDate = $deliveryDate;
         return $this;
@@ -210,17 +252,26 @@ class PreAppMessage implements ArrayInterface
         return $this->phoneNumber;
     }
 
-    public function getExpiresAt(): ?DateTimeInterface
+    /**
+     * @return \DateTimeInterface|null
+     */
+    public function getExpiresAt()
     {
         return $this->expiresAt;
     }
 
-    public function getDeliveryDate(): ?DateTimeInterface
+    /**
+     * @return \DateTimeInterface|null
+     */
+    public function getDeliveryDate()
     {
         return $this->deliveryDate;
     }
 
-    public function getDeliveryPoint(): ?DeliveryPoint
+    /**
+     * @return \BnplPartners\Factoring004\PreApp\DeliveryPoint|null
+     */
+    public function getDeliveryPoint()
     {
         return $this->deliveryPoint;
     }
@@ -249,12 +300,14 @@ class PreAppMessage implements ArrayInterface
             'itemsQuantity' => $this->getItemsQuantity(),
             'successRedirect' => $this->getSuccessRedirect(),
             'postLink' => $this->getPostLink(),
-            'expiresAt' => $expiresAt === null ? null : $expiresAt->format(DateTimeInterface::ISO8601),
-            'deliveryDate' => $deliveryDate === null ? null : $deliveryDate->format(DateTimeInterface::ISO8601),
+            'expiresAt' => $expiresAt === null ? null : $expiresAt->format('Y-m-d\TH:i:sO'),
+            'deliveryDate' => $deliveryDate === null ? null : $deliveryDate->format('Y-m-d\TH:i:sO'),
             'failRedirect' => $this->getFailRedirect(),
             'phoneNumber' => $this->getPhoneNumber(),
             'deliveryPoint' => $deliveryPoint ? $deliveryPoint->toArray() : null,
-            'items' => array_map(fn(Item $item) => $item->toArray(), $this->getItems()),
+            'items' => array_map(function (Item $item) {
+                return $item->toArray();
+            }, $this->getItems()),
         ]);
     }
 }

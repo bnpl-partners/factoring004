@@ -13,9 +13,18 @@ use JsonSerializable;
  */
 class PreAppResponse implements JsonSerializable, ArrayInterface
 {
-    private Status $status;
-    private string $preAppId;
-    private string $redirectLink;
+    /**
+     * @var \BnplPartners\Factoring004\PreApp\Status
+     */
+    private $status;
+    /**
+     * @var string
+     */
+    private $preAppId;
+    /**
+     * @var string
+     */
+    private $redirectLink;
 
     public function __construct(Status $status, string $preAppId, string $redirectLink)
     {
@@ -28,7 +37,7 @@ class PreAppResponse implements JsonSerializable, ArrayInterface
      * @param array<string, mixed> $data
      * @psalm-param array{status: string, preappId: string, redirectLink: string} $data
      */
-    public static function createFromArray(array $data): PreAppResponse
+    public static function createFromArray($data): PreAppResponse
     {
         return new self(new Status($data['status']), $data['preappId'], $data['redirectLink']);
     }

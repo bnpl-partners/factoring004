@@ -8,11 +8,17 @@ use Psr\Http\Message\RequestInterface;
 
 class BasicAuth implements AuthenticationInterface
 {
-    private const HEADER_NAME = 'Authorization';
-    private const AUTH_SCHEMA = 'Basic';
+    const HEADER_NAME = 'Authorization';
+    const AUTH_SCHEMA = 'Basic';
 
-    private string $username;
-    private string $password;
+    /**
+     * @var string
+     */
+    private $username;
+    /**
+     * @var string
+     */
+    private $password;
 
     public function __construct(string $username, string $password)
     {
@@ -20,7 +26,10 @@ class BasicAuth implements AuthenticationInterface
         $this->password = $password;
     }
 
-    public function apply(RequestInterface $request): RequestInterface
+    /**
+     * @param \Psr\Http\Message\RequestInterface $request
+     */
+    public function apply($request): RequestInterface
     {
         return $request->withHeader(static::HEADER_NAME, static::AUTH_SCHEMA . ' ' . $this->encodeCredentials());
     }

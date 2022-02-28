@@ -14,19 +14,34 @@ use InvalidArgumentException;
 
 class OAuthTokenManager implements OAuthTokenManagerInterface
 {
-    private const ACCESS_PATH = '/token';
-    private const REVOKE_PATH = '/revoke';
+    const ACCESS_PATH = '/token';
+    const REVOKE_PATH = '/revoke';
 
-    private TransportInterface $transport;
-    private string $baseUri;
-    private string $consumerKey;
-    private string $consumerSecret;
+    /**
+     * @var \BnplPartners\Factoring004\Transport\TransportInterface
+     */
+    private $transport;
+    /**
+     * @var string
+     */
+    private $baseUri;
+    /**
+     * @var string
+     */
+    private $consumerKey;
+    /**
+     * @var string
+     */
+    private $consumerSecret;
 
+    /**
+     * @param \BnplPartners\Factoring004\Transport\TransportInterface|null $transport
+     */
     public function __construct(
         string $baseUri,
         string $consumerKey,
         string $consumerSecret,
-        ?TransportInterface $transport = null
+        $transport = null
     ) {
         if (!$baseUri) {
             throw new InvalidArgumentException('Base URI cannot be empty');
@@ -66,7 +81,10 @@ class OAuthTokenManager implements OAuthTokenManagerInterface
         throw new OAuthException('Cannot generate an access token');
     }
 
-    public function revokeToken(): void
+    /**
+     * @return void
+     */
+    public function revokeToken()
     {
         throw new BadMethodCallException('Method ' . __FUNCTION__ . ' is not supported');
     }

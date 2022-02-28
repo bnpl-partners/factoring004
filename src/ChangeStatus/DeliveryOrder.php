@@ -18,7 +18,7 @@ class DeliveryOrder extends AbstractMerchantOrder
      * @param array<string, mixed> $order
      * @psalm-param array{orderId: string, status: string} $order
      */
-    public static function createFromArray(array $order): DeliveryOrder
+    public static function createFromArray($order): DeliveryOrder
     {
         return new self($order['orderId'], new DeliveryStatus($order['status']));
     }

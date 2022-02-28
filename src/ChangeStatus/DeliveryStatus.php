@@ -13,5 +13,5 @@ use MyCLabs\Enum\Enum;
  */
 final class DeliveryStatus extends Enum
 {
-    private const DELIVERY = 'delivery';
+    const DELIVERY = 'delivery';
 }

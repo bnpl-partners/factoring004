@@ -11,12 +11,30 @@ use BnplPartners\Factoring004\ArrayInterface;
  */
 class Item implements ArrayInterface
 {
-    private string $itemId;
-    private string $itemName;
-    private string $itemCategory;
-    private int $itemQuantity;
-    private int $itemPrice;
-    private int $itemSum;
+    /**
+     * @var string
+     */
+    private $itemId;
+    /**
+     * @var string
+     */
+    private $itemName;
+    /**
+     * @var string
+     */
+    private $itemCategory;
+    /**
+     * @var int
+     */
+    private $itemQuantity;
+    /**
+     * @var int
+     */
+    private $itemPrice;
+    /**
+     * @var int
+     */
+    private $itemSum;
 
     public function __construct(
         string $itemId,
@@ -47,16 +65,9 @@ class Item implements ArrayInterface
      *
      * @return \BnplPartners\Factoring004\PreApp\Item
      */
-    public static function createFromArray(array $item): Item
+    public static function createFromArray($item): Item
     {
-        return new self(
-            $item['itemId'],
-            $item['itemName'],
-            $item['itemCategory'],
-            $item['itemQuantity'],
-            $item['itemPrice'],
-            $item['itemSum'],
-        );
+        return new self($item['itemId'], $item['itemName'], $item['itemCategory'], $item['itemQuantity'], $item['itemPrice'], $item['itemSum']);
     }
 
     public function getItemId(): string

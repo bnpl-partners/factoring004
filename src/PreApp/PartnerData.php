@@ -12,9 +12,18 @@ use InvalidArgumentException;
  */
 class PartnerData implements ArrayInterface
 {
-    private string $partnerName;
-    private string $partnerCode;
-    private string $pointCode;
+    /**
+     * @var string
+     */
+    private $partnerName;
+    /**
+     * @var string
+     */
+    private $partnerCode;
+    /**
+     * @var string
+     */
+    private $pointCode;
 
     public function __construct(string $partnerName, string $partnerCode, string $pointCode)
     {
@@ -29,7 +38,7 @@ class PartnerData implements ArrayInterface
      *
      * @throws \InvalidArgumentException
      */
-    public static function createFromArray(array $partnerData): PartnerData
+    public static function createFromArray($partnerData): PartnerData
     {
         if (empty($partnerData['partnerName'])) {
             throw new InvalidArgumentException("Key 'partnerName' is required");

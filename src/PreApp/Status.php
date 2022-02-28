@@ -14,6 +14,6 @@ use MyCLabs\Enum\Enum;
  */
 final class Status extends Enum
 {
-    private const RECEIVED = 'received';
-    private const ERROR = 'error';
+    const RECEIVED = 'received';
+    const ERROR = 'error';
 }

@@ -8,12 +8,15 @@ use BnplPartners\Factoring004\ArrayInterface;
 
 class MerchantsOrders implements ArrayInterface
 {
-    private string $merchantId;
+    /**
+     * @var string
+     */
+    private $merchantId;
 
     /**
      * @var \BnplPartners\Factoring004\ChangeStatus\AbstractMerchantOrder[]
      */
-    private array $orders;
+    private $orders;
 
     /**
      * @param \BnplPartners\Factoring004\ChangeStatus\AbstractMerchantOrder[] $orders
@@ -28,7 +31,7 @@ class MerchantsOrders implements ArrayInterface
      * @param array<string, mixed> $merchantsOrders
      * @psalm-param array{merchantId: string, orders: array{orderId: string, status: string, amount?: int}[]} $merchantsOrders
      */
-    public static function createFromArray(array $merchantsOrders): MerchantsOrders
+    public static function createFromArray($merchantsOrders): MerchantsOrders
     {
         return new self(
             $merchantsOrders['merchantId'],
@@ -60,7 +63,9 @@ class MerchantsOrders implements ArrayInterface
     {
         return [
             'merchantId' => $this->getMerchantId(),
-            'orders' => array_map(fn(AbstractMerchantOrder $order) => $order->toArray(), $this->getOrders()),
+            'orders' => array_map(function (AbstractMerchantOrder $order) {
+                return $order->toArray();
+            }, $this->getOrders()),
         ];
     }
 }

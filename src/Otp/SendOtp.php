@@ -11,8 +11,14 @@ use BnplPartners\Factoring004\ArrayInterface;
  */
 class SendOtp implements ArrayInterface
 {
-    private string $merchantId;
-    private string $merchantOrderId;
+    /**
+     * @var string
+     */
+    private $merchantId;
+    /**
+     * @var string
+     */
+    private $merchantOrderId;
 
     public function __construct(string $merchantId, string $merchantOrderId)
     {
@@ -25,7 +31,7 @@ class SendOtp implements ArrayInterface
      *
      * @psalm-param array{merchantId: string, merchantOrderId: string} $sendOtp
      */
-    public static function createFromArray(array $sendOtp): SendOtp
+    public static function createFromArray($sendOtp): SendOtp
     {
         return new self($sendOtp['merchantId'], $sendOtp['merchantOrderId']);
     }

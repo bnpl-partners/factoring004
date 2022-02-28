@@ -25,12 +25,14 @@ class ChangeStatusResource extends AbstractResource
      * @throws \BnplPartners\Factoring004\Exception\TransportException
      * @throws \BnplPartners\Factoring004\Exception\UnexpectedResponseException
      */
-    public function changeStatusJson(array $merchantOrders): ChangeStatusResponse
+    public function changeStatusJson($merchantOrders): ChangeStatusResponse
     {
         $response = $this->request(
             'PUT',
             '/accountingservice/1.0/changeStatus/json',
-            array_map(fn(MerchantsOrders $orders) => $orders->toArray(), $merchantOrders)
+            array_map(function (MerchantsOrders $orders) {
+                return $orders->toArray();
+            }, $merchantOrders)
         );
 
         if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
@@ -46,8 +48,9 @@ class ChangeStatusResource extends AbstractResource
      * @throws \BnplPartners\Factoring004\Exception\AuthenticationException
      * @throws \BnplPartners\Factoring004\Exception\ErrorResponseException
      * @throws \BnplPartners\Factoring004\Exception\UnexpectedResponseException
+     * @return void
      */
-    private function handleClientError(ResponseInterface $response): void
+    private function handleClientError(ResponseInterface $response)
     {
         if ($response->getStatusCode() >= 400 && $response->getStatusCode() < 500) {
             $data = $response->getBody();

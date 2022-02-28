@@ -13,20 +13,22 @@ interface TransportInterface
 {
     /**
      * Base URI of endpoints.
+     * @param string $uri
      */
-    public function setBaseUri(string $uri): TransportInterface;
+    public function setBaseUri($uri): TransportInterface;
 
     /**
      * Sets global HTTP headers. Content-Type, User-Agent etc.
      *
      * @param array<string, string> $headers
      */
-    public function setHeaders(array $headers): TransportInterface;
+    public function setHeaders($headers): TransportInterface;
 
     /**
      * Sets authentication method.
+     * @param \BnplPartners\Factoring004\Auth\AuthenticationInterface $authentication
      */
-    public function setAuthentication(AuthenticationInterface $authentication): TransportInterface;
+    public function setAuthentication($authentication): TransportInterface;
 
     /**
      * Sends HTTP GET request to the endpoint.
@@ -41,7 +43,7 @@ interface TransportInterface
      * @throws \BnplPartners\Factoring004\Exception\DataSerializationException
      * @throws \BnplPartners\Factoring004\Exception\TransportException
      */
-    public function get(string $path, array $query = [], array $headers = []): ResponseInterface;
+    public function get($path, $query = [], $headers = []): ResponseInterface;
 
     /**
      * Sends HTTP POST request to the endpoint.
@@ -56,7 +58,7 @@ interface TransportInterface
      * @throws \BnplPartners\Factoring004\Exception\DataSerializationException
      * @throws \BnplPartners\Factoring004\Exception\TransportException
      */
-    public function post(string $path, array $data = [], array $headers = []): ResponseInterface;
+    public function post($path, $data = [], $headers = []): ResponseInterface;
 
     /**
      * Sends HTTP request using method and parameters.
@@ -72,5 +74,5 @@ interface TransportInterface
      * @throws \BnplPartners\Factoring004\Exception\DataSerializationException
      * @throws \BnplPartners\Factoring004\Exception\TransportException
      */
-    public function request(string $method, string $path, array $data = [], array $headers = []): ResponseInterface;
+    public function request($method, $path, $data = [], $headers = []): ResponseInterface;
 }

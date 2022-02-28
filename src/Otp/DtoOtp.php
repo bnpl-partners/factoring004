@@ -9,7 +9,10 @@ use JsonSerializable;
 
 class DtoOtp implements JsonSerializable, ArrayInterface
 {
-    private string $msg;
+    /**
+     * @var string
+     */
+    private $msg;
 
     public function __construct(string $msg)
     {
@@ -20,7 +23,7 @@ class DtoOtp implements JsonSerializable, ArrayInterface
      * @param array<string, string> $changeStatus
      * @psalm-param array{msg: string} $changeStatus
      */
-    public static function createFromArray(array $changeStatus): DtoOtp
+    public static function createFromArray($changeStatus): DtoOtp
     {
         return new self($changeStatus['msg']);
     }

@@ -15,19 +15,29 @@ use JsonSerializable;
  */
 class ValidationErrorResponse implements JsonSerializable, ArrayInterface
 {
-    private int $code;
+    /**
+     * @var int
+     */
+    private $code;
 
     /**
      * @var \BnplPartners\Factoring004\PreApp\ValidationErrorDetail[]
      */
-    private array $details;
-    private string $message;
-    private ?string $prefix;
+    private $details;
+    /**
+     * @var string
+     */
+    private $message;
+    /**
+     * @var string|null
+     */
+    private $prefix;
 
     /**
      * @param \BnplPartners\Factoring004\PreApp\ValidationErrorDetail[] $details
+     * @param string|null $prefix
      */
-    public function __construct(int $code, array $details, string $message, ?string $prefix = null)
+    public function __construct(int $code, array $details, string $message, $prefix = null)
     {
         $this->code = $code;
         $this->details = $details;
@@ -45,14 +55,9 @@ class ValidationErrorResponse implements JsonSerializable, ArrayInterface
           * prefix?: string
        * } $error
      */
-    public static function createFromArray(array $response): ValidationErrorResponse
+    public static function createFromArray($response): ValidationErrorResponse
     {
-        return new self(
-            (int) $response['code'],
-            ValidationErrorDetail::createMany($response['details'] ?? []),
-            $response['message'],
-            $response['prefix'] ?? null,
-        );
+        return new self((int) $response['code'], ValidationErrorDetail::createMany($response['details'] ?? []), $response['message'], $response['prefix'] ?? null);
     }
 
     public function getCode(): int
@@ -73,7 +78,10 @@ class ValidationErrorResponse implements JsonSerializable, ArrayInterface
         return $this->message;
     }
 
-    public function getPrefix(): ?string
+    /**
+     * @return string|null
+     */
+    public function getPrefix()
     {
         return $this->prefix;
     }
@@ -86,7 +94,9 @@ class ValidationErrorResponse implements JsonSerializable, ArrayInterface
     {
         $data = [
             'code' => $this->getCode(),
-            'details' => array_map(fn($detail) => $detail->toArray(), $this->getDetails()),
+            'details' => array_map(function ($detail) {
+                return $detail->toArray();
+            }, $this->getDetails()),
             'message' => $this->getMessage(),
         ];
 

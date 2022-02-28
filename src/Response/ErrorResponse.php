@@ -14,12 +14,28 @@ use JsonSerializable;
  */
 class ErrorResponse implements JsonSerializable, ArrayInterface
 {
-    protected string $code;
-    protected string $message;
-    protected ?string $description;
-    protected ?string $type;
+    /**
+     * @var string
+     */
+    protected $code;
+    /**
+     * @var string
+     */
+    protected $message;
+    /**
+     * @var string|null
+     */
+    protected $description;
+    /**
+     * @var string|null
+     */
+    protected $type;
 
-    public function __construct(string $code, string $message, ?string $description = null, ?string $type = null)
+    /**
+     * @param string|null $description
+     * @param string|null $type
+     */
+    public function __construct(string $code, string $message, $description = null, $type = null)
     {
         $this->code = $code;
         $this->message = $message;
@@ -31,14 +47,9 @@ class ErrorResponse implements JsonSerializable, ArrayInterface
      * @param array<string, mixed> $response
      * @psalm-param array{code: string|int, message: string, description?: string, type?: string} $response
      */
-    public static function createFromArray(array $response): ErrorResponse
+    public static function createFromArray($response): ErrorResponse
     {
-        return new self(
-            (string) $response['code'],
-            $response['message'],
-            $response['description'] ?? null,
-            $response['type'] ?? null,
-        );
+        return new self((string) $response['code'], $response['message'], $response['description'] ?? null, $response['type'] ?? null);
     }
 
     public function getCode(): string
@@ -51,12 +62,18 @@ class ErrorResponse implements JsonSerializable, ArrayInterface
         return $this->message;
     }
 
-    public function getDescription(): ?string
+    /**
+     * @return string|null
+     */
+    public function getDescription()
     {
         return $this->description;
     }
 
-    public function getType(): ?string
+    /**
+     * @return string|null
+     */
+    public function getType()
     {
         return $this->type;
     }

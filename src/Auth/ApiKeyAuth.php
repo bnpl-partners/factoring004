@@ -8,16 +8,22 @@ use Psr\Http\Message\RequestInterface;
 
 class ApiKeyAuth implements AuthenticationInterface
 {
-    private const HEADER_NAME = 'apikey';
+    const HEADER_NAME = 'apikey';
 
-    private string $apiKey;
+    /**
+     * @var string
+     */
+    private $apiKey;
 
     public function __construct(string $apiKey)
     {
         $this->apiKey = $apiKey;
     }
 
-    public function apply(RequestInterface $request): RequestInterface
+    /**
+     * @param \Psr\Http\Message\RequestInterface $request
+     */
+    public function apply($request): RequestInterface
     {
         return $request->withHeader(static::HEADER_NAME, $this->apiKey);
     }

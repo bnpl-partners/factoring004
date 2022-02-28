@@ -9,7 +9,10 @@ use Throwable;
 
 class UnexpectedResponseException extends ApiException
 {
-    private ResponseInterface $response;
+    /**
+     * @var \BnplPartners\Factoring004\Transport\ResponseInterface
+     */
+    private $response;
 
     public function __construct(
         ResponseInterface $response,

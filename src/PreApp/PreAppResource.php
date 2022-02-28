@@ -26,8 +26,9 @@ class PreAppResource extends AbstractResource
      * @throws \BnplPartners\Factoring004\Exception\UnexpectedResponseException
      * @throws \BnplPartners\Factoring004\Exception\ValidationException
      * @throws \BnplPartners\Factoring004\Exception\ApiException
+     * @param \BnplPartners\Factoring004\PreApp\PreAppMessage $data
      */
-    public function preApp(PreAppMessage $data): PreAppResponse
+    public function preApp($data): PreAppResponse
     {
         $response = $this->postRequest('/bnpl-partners/1.0/preapp', $data->toArray());
 
@@ -47,8 +48,9 @@ class PreAppResource extends AbstractResource
      * @throws \BnplPartners\Factoring004\Exception\ErrorResponseException
      * @throws \BnplPartners\Factoring004\Exception\UnexpectedResponseException
      * @throws \BnplPartners\Factoring004\Exception\ValidationException
+     * @return void
      */
-    private function handleClientError(ResponseInterface $response): void
+    private function handleClientError(ResponseInterface $response)
     {
         $data = $response->getBody();
 
