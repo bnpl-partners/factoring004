@@ -68,8 +68,8 @@ class ChangeStatusResponseTest extends TestCase
             [new ErrorResponse('code', 'error', 'message')],
         );
         $expected = [
-            'SuccessfulResponses' => [['error' => '', 'msg' => 'message']],
-            'ErrorResponses' => [['code' => 'code', 'error' => 'error', 'message' => 'message']],
+            'SuccessfulResponses' => [['error' => '', 'msg' => 'message', 'merchantOrderId' => '']],
+            'ErrorResponses' => [['code' => 'code', 'error' => 'error', 'message' => 'message', 'merchantOrderId' => '']],
         ];
         $this->assertEquals($expected, $response->toArray());
     }
@@ -85,8 +85,8 @@ class ChangeStatusResponseTest extends TestCase
             [new ErrorResponse('code', 'error', 'message')],
         );
         $expected = [
-            'SuccessfulResponses' => [['error' => '', 'msg' => 'message']],
-            'ErrorResponses' => [['code' => 'code', 'error' => 'error', 'message' => 'message']],
+            'SuccessfulResponses' => [['error' => '', 'msg' => 'message', 'merchantOrderId' => '']],
+            'ErrorResponses' => [['code' => 'code', 'error' => 'error', 'message' => 'message', 'merchantOrderId' => '']],
         ];
         $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($response));
     }
