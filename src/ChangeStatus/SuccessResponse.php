@@ -14,22 +14,24 @@ class SuccessResponse implements JsonSerializable, ArrayInterface
 {
     private string $error;
     private string $msg;
+    private string $merchantOrderId;
 
-    public function __construct(string $error, string $msg)
+    public function __construct(string $error, string $msg, string $merchantOrderId = '')
     {
         $this->error = $error;
         $this->msg = $msg;
+        $this->merchantOrderId = $merchantOrderId;
     }
 
     /**
      * @param array<string, string> $response
-     * @psalm-param array{error: string, msg: string} $response
+     * @psalm-param array{error: string, msg: string, merchantOrderId?: string} $response
      *
      * @return \BnplPartners\Factoring004\ChangeStatus\SuccessResponse
      */
     public static function createFromArray(array $response): SuccessResponse
     {
-        return new self($response['error'], $response['msg']);
+        return new self($response['error'], $response['msg'], $response['merchantOrderId'] ?? '');
     }
 
     public function getError(): string
@@ -42,14 +44,20 @@ class SuccessResponse implements JsonSerializable, ArrayInterface
         return $this->msg;
     }
 
+    public function getMerchantOrderId(): string
+    {
+        return $this->merchantOrderId;
+    }
+
     /**
-     * @psalm-return array{error: string, msg: string}
+     * @psalm-return array{error: string, msg: string, merchantOrderId: string}
      */
     public function toArray(): array
     {
         return [
             'error' => $this->getError(),
             'msg' => $this->getMsg(),
+            'merchantOrderId' => $this->getMerchantOrderId(),
         ];
     }
 

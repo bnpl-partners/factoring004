@@ -14,6 +14,10 @@ class ChangeStatusResponseTest extends TestCase
         $actual = ChangeStatusResponse::createFromArray(['SuccessfulResponses' => [], 'ErrorResponses' => []]);
         $this->assertEquals($expected, $actual);
 
+        $expected = new ChangeStatusResponse([], []);
+        $actual = ChangeStatusResponse::createFromArray(['successfulResponses' => [], 'errorResponses' => []]);
+        $this->assertEquals($expected, $actual);
+
         $expected = new ChangeStatusResponse(
             [new SuccessResponse('', 'message')],
             [new ErrorResponse('code', 'error', 'message')]
@@ -21,6 +25,16 @@ class ChangeStatusResponseTest extends TestCase
         $actual = ChangeStatusResponse::createFromArray([
             'SuccessfulResponses' => [['error' => '', 'msg' => 'message']],
             'ErrorResponses' => [['code' => 'code', 'error' => 'error', 'message' => 'message']],
+        ]);
+        $this->assertEquals($expected, $actual);
+
+        $expected = new ChangeStatusResponse(
+            [new SuccessResponse('', 'message')],
+            [new ErrorResponse('code', 'error', 'message')]
+        );
+        $actual = ChangeStatusResponse::createFromArray([
+            'successfulResponses' => [['error' => '', 'msg' => 'message']],
+            'errorResponses' => [['code' => 'code', 'error' => 'error', 'message' => 'message']],
         ]);
         $this->assertEquals($expected, $actual);
     }
@@ -54,8 +68,8 @@ class ChangeStatusResponseTest extends TestCase
             [new ErrorResponse('code', 'error', 'message')],
         );
         $expected = [
-            'SuccessfulResponses' => [['error' => '', 'msg' => 'message']],
-            'ErrorResponses' => [['code' => 'code', 'error' => 'error', 'message' => 'message']],
+            'SuccessfulResponses' => [['error' => '', 'msg' => 'message', 'merchantOrderId' => '']],
+            'ErrorResponses' => [['code' => 'code', 'error' => 'error', 'message' => 'message', 'merchantOrderId' => '']],
         ];
         $this->assertEquals($expected, $response->toArray());
     }
@@ -71,8 +85,8 @@ class ChangeStatusResponseTest extends TestCase
             [new ErrorResponse('code', 'error', 'message')],
         );
         $expected = [
-            'SuccessfulResponses' => [['error' => '', 'msg' => 'message']],
-            'ErrorResponses' => [['code' => 'code', 'error' => 'error', 'message' => 'message']],
+            'SuccessfulResponses' => [['error' => '', 'msg' => 'message', 'merchantOrderId' => '']],
+            'ErrorResponses' => [['code' => 'code', 'error' => 'error', 'message' => 'message', 'merchantOrderId' => '']],
         ];
         $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($response));
     }

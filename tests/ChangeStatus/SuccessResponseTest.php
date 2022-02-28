@@ -12,7 +12,10 @@ class SuccessResponseTest extends TestCase
     {
         $expected = new SuccessResponse('test', 'message');
         $actual = SuccessResponse::createFromArray(['error' => 'test', 'msg' => 'message']);
+        $this->assertEquals($expected, $actual);
 
+        $expected = new SuccessResponse('test', 'message', '100');
+        $actual = SuccessResponse::createFromArray(['error' => 'test', 'msg' => 'message', 'merchantOrderId' => '100']);
         $this->assertEquals($expected, $actual);
     }
 
@@ -34,14 +37,31 @@ class SuccessResponseTest extends TestCase
         $this->assertEquals('test', $response->getMsg());
     }
 
+    public function testGetMerchantOrderId(): void
+    {
+        $response = new SuccessResponse('test', 'message');
+        $this->assertEmpty($response->getMerchantOrderId());
+
+        $response = new SuccessResponse('error', 'test', '100');
+        $this->assertEquals('100', $response->getMerchantOrderId());
+    }
+
     public function testToArray(): void
     {
         $response = new SuccessResponse('test', 'message');
         $expected = [
             'error' => 'test',
             'msg' => 'message',
+            'merchantOrderId' => '',
         ];
+        $this->assertEquals($expected, $response->toArray());
 
+        $response = new SuccessResponse('test', 'message', '100');
+        $expected = [
+            'error' => 'test',
+            'msg' => 'message',
+            'merchantOrderId' => '100',
+        ];
         $this->assertEquals($expected, $response->toArray());
     }
 
@@ -51,8 +71,16 @@ class SuccessResponseTest extends TestCase
         $expected = [
             'error' => 'test',
             'msg' => 'message',
+            'merchantOrderId' => '',
         ];
+        $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($response));
 
+        $response = new SuccessResponse('test', 'message', '100');
+        $expected = [
+            'error' => 'test',
+            'msg' => 'message',
+            'merchantOrderId' => '100',
+        ];
         $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($response));
     }
 }

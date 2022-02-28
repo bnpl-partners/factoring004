@@ -15,21 +15,23 @@ class ErrorResponse implements JsonSerializable, ArrayInterface
     private string $code;
     private string $error;
     private string $message;
+    private string $merchantOrderId;
 
-    public function __construct(string $code, string $error, string $message)
+    public function __construct(string $code, string $error, string $message, string $merchantOrderId = '')
     {
         $this->code = $code;
         $this->error = $error;
         $this->message = $message;
+        $this->merchantOrderId = $merchantOrderId;
     }
 
     /**
      * @param array<string, string> $response
-     * @psalm-param array{code: string, error: string, message: string} $response
+     * @psalm-param array{code: string, error: string, message: string, merchantOrderId?: string} $response
      */
     public static function createFromArray(array $response): ErrorResponse
     {
-        return new self($response['code'], $response['error'], $response['message']);
+        return new self($response['code'], $response['error'], $response['message'], $response['merchantOrderId'] ?? '');
     }
 
     public function getCode(): string
@@ -47,8 +49,13 @@ class ErrorResponse implements JsonSerializable, ArrayInterface
         return $this->message;
     }
 
+    public function getMerchantOrderId(): string
+    {
+        return $this->merchantOrderId;
+    }
+
     /**
-     * @psalm-return array{code: string, error: string, message: string}
+     * @psalm-return array{code: string, error: string, message: string, merchantOrderId: string}
      */
     public function toArray(): array
     {
@@ -56,6 +63,7 @@ class ErrorResponse implements JsonSerializable, ArrayInterface
             'code' => $this->getCode(),
             'error' => $this->getError(),
             'message' => $this->getMessage(),
+            'merchantOrderId' => $this->getMerchantOrderId(),
         ];
     }
 
