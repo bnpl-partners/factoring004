@@ -175,6 +175,56 @@ abstract class AbstractResourceTest extends TestCase
     /**
      * @throws \BnplPartners\Factoring004\Exception\PackageException
      */
+    public function testWithAccessTokenNotAllowError(): void
+    {
+        $data = [
+            'code' => '900910',
+            'message' => 'The access token does not allow you to access the requested resource',
+            'description' => 'The access token does not allow you to access the requested resource',
+        ];
+
+        $client = $this->createStub(ClientInterface::class);
+        $client->method('sendRequest')
+            ->willReturn(new Response(401, ['Content-Type' => 'application/json'], json_encode($data)));
+
+        try {
+            $this->callResourceMethod($client);
+        } catch (AuthenticationException $e) {
+            $this->assertEquals((int) $data['code'], $e->getCode());
+            $this->assertEquals($data['message'], $e->getMessage());
+            $this->assertEquals($data['description'], $e->getDescription());
+        }
+    }
+
+    /**
+     * @throws \BnplPartners\Factoring004\Exception\PackageException
+     */
+    public function testWithAccessTokenNotAllowFault(): void
+    {
+        $data = [
+            'fault' => [
+                'code' => '900910',
+                'message' => 'The access token does not allow you to access the requested resource',
+                'description' => 'The access token does not allow you to access the requested resource',
+            ],
+        ];
+
+        $client = $this->createStub(ClientInterface::class);
+        $client->method('sendRequest')
+            ->willReturn(new Response(401, ['Content-Type' => 'application/json'], json_encode($data)));
+
+        try {
+            $this->callResourceMethod($client);
+        } catch (AuthenticationException $e) {
+            $this->assertEquals((int) $data['fault']['code'], $e->getCode());
+            $this->assertEquals($data['fault']['message'], $e->getMessage());
+            $this->assertEquals($data['fault']['description'], $e->getDescription());
+        }
+    }
+
+    /**
+     * @throws \BnplPartners\Factoring004\Exception\PackageException
+     */
     public function testWithForbiddenError(): void
     {
         $data = [
