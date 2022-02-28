@@ -35,8 +35,10 @@ class ChangeStatusResponse implements JsonSerializable, ArrayInterface
     /**
      * @param array<string, array<string, mixed>[]> $responses
      * @psalm-param array{
-         SuccessfulResponses: array{error: string, msg: string}[],
-         ErrorResponses: array{code: string, error: string, message: string}[],
+         SuccessfulResponses?: array{error: string, msg: string}[],
+         successfulResponses?: array{error: string, msg: string}[],
+         ErrorResponses?: array{code: string, error: string, message: string}[],
+         errorResponses?: array{code: string, error: string, message: string}[],
      } $responses
      *
      * @return \BnplPartners\Factoring004\ChangeStatus\ChangeStatusResponse
@@ -46,11 +48,11 @@ class ChangeStatusResponse implements JsonSerializable, ArrayInterface
         return new self(
             array_map(
                 fn(array $response) => SuccessResponse::createFromArray($response),
-                $responses['SuccessfulResponses'] ?? []
+                $responses['successfulResponses'] ?? $responses['SuccessfulResponses'] ?? []
             ),
             array_map(
                 fn(array $response) => ErrorResponse::createFromArray($response),
-                $responses['ErrorResponses'] ?? []
+                $responses['errorResponses'] ?? $responses['ErrorResponses'] ?? []
             ),
         );
     }
