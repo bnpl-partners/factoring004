@@ -8,10 +8,15 @@ use MyCLabs\Enum\Enum;
 
 /**
  * @method static static DELIVERY()
+ * @method static static DELIVERED()
  *
  * @psalm-immutable
  */
 final class DeliveryStatus extends Enum
 {
-    private const DELIVERY = 'delivery';
+    /**
+     * @deprecated Use DeliveryStatus::DELIVERED instead
+     */
+    private const DELIVERY = 'delivered';
+    private const DELIVERED = 'delivered';
 }

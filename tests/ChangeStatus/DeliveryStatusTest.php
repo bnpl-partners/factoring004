@@ -10,7 +10,12 @@ class DeliveryStatusTest extends TestCase
 {
     public function testDELIVERY(): void
     {
-        $this->assertEquals(DeliveryStatus::DELIVERY(), DeliveryStatus::from('delivery'));
+        $this->assertEquals(DeliveryStatus::DELIVERY(), DeliveryStatus::from('delivered'));
+    }
+
+    public function testDELIVERED(): void
+    {
+        $this->assertEquals(DeliveryStatus::DELIVERED(), DeliveryStatus::from('delivered'));
     }
 }
 
