@@ -22,9 +22,4 @@ class DeliveryOrder extends AbstractMerchantOrder
     {
         return new self($order['orderId'], new DeliveryStatus($order['status']));
     }
-
-    public function getStatus(): DeliveryStatus
-    {
-        return $this->status;
-    }
 }

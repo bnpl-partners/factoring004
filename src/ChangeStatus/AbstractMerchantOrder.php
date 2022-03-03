@@ -41,7 +41,7 @@ abstract class AbstractMerchantOrder implements ArrayInterface
      * @codeCoverageIgnore
      * @return T
      */
-    public function getStatus(): Enum
+    public function getStatus()
     {
         return $this->status;
     }

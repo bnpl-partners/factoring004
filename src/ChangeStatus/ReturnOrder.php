@@ -35,11 +35,6 @@ class ReturnOrder extends AbstractMerchantOrder
         return $this->amount;
     }
 
-    public function getStatus(): ReturnStatus
-    {
-        return $this->status;
-    }
-
     /**
      * @psalm-return array{orderId: string, status: string, amount: int}
      */
