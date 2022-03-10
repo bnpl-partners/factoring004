@@ -59,6 +59,8 @@ class PreAppMessage implements ArrayInterface
      * @var \BnplPartners\Factoring004\PreApp\Item[]
      */
     private $items;
+    private string $partnerEmail;
+    private string $partnerWebsite;
 
     /**
      * @param \BnplPartners\Factoring004\PreApp\Item[] $items
@@ -70,7 +72,9 @@ class PreAppMessage implements ArrayInterface
         int $itemsQuantity,
         string $successRedirect,
         string $postLink,
-        array $items
+        array $items,
+        string $partnerEmail,
+        string $partnerWebsite
     ) {
         if ($billAmount <= 0) {
             throw new InvalidArgumentException('billAmount must be greater than 0');
@@ -80,6 +84,14 @@ class PreAppMessage implements ArrayInterface
             throw new InvalidArgumentException('itemsQuantity must be greater than 0');
         }
 
+        if (!filter_var($partnerEmail, FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidArgumentException('partnerEmail must be a valid email');
+        }
+
+        if (!filter_var($partnerWebsite, FILTER_VALIDATE_URL)) {
+            throw new InvalidArgumentException('partnerWebsite must be a valid origin');
+        }
+
         $this->partnerData = $partnerData;
         $this->billNumber = $billNumber;
         $this->billAmount = $billAmount;
@@ -87,6 +99,8 @@ class PreAppMessage implements ArrayInterface
         $this->successRedirect = $successRedirect;
         $this->postLink = $postLink;
         $this->items = $items;
+        $this->partnerEmail = $partnerEmail;
+        $this->partnerWebsite = $partnerWebsite;
     }
 
     /**
@@ -124,6 +138,8 @@ class PreAppMessage implements ArrayInterface
               itemPrice: int,
               itemSum: int,
            }[],
+           partnerEmail: string,
+           partnerWebsite: string,
      * } $data
      *
      * @throws \InvalidArgumentException
@@ -148,6 +164,8 @@ class PreAppMessage implements ArrayInterface
             array_map(function (array $item) {
                 return Item::createFromArray($item);
             }, $data['items'])
+            $data['partnerEmail'],
+            $data['partnerWebsite'],
         );
 
         if (isset($data['failRedirect'])) {
@@ -286,6 +304,16 @@ class PreAppMessage implements ArrayInterface
         return $this->deliveryPoint;
     }
 
+    public function getPartnerEmail(): string
+    {
+        return $this->partnerEmail;
+    }
+
+    public function getPartnerWebsite(): string
+    {
+        return $this->partnerWebsite;
+    }
+
     /**
      * @return \BnplPartners\Factoring004\PreApp\Item[]
      */
@@ -318,6 +346,8 @@ class PreAppMessage implements ArrayInterface
             'items' => array_map(function (Item $item) {
                 return $item->toArray();
             }, $this->getItems()),
+            'partnerEmail' => $this->getPartnerEmail(),
+            'partnerWebsite' => $this->getPartnerWebsite(),
         ]);
     }
 }
