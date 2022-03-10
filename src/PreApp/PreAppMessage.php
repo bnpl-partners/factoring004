@@ -84,7 +84,7 @@ class PreAppMessage implements ArrayInterface
            items: array{
               itemId: string,
               itemName: string,
-              itemCategory: string,
+              itemCategory?: string,
               itemQuantity: int,
               itemPrice: int,
               itemSum: int,
