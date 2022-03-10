@@ -12,7 +12,18 @@ class DtoOtpTest extends TestCase
     {
         $expected = new DtoOtp('test');
         $actual = DtoOtp::createFromArray(['msg' => 'test']);
+        $this->assertEquals($expected, $actual);
 
+        $expected = new DtoOtp('test', true);
+        $actual = DtoOtp::createFromArray(['msg' => 'test', 'error' => true]);
+        $this->assertEquals($expected, $actual);
+
+        $expected = new DtoOtp('test');
+        $actual = DtoOtp::createFromArray(['msg' => 'test', 'error' => 'false']);
+        $this->assertEquals($expected, $actual);
+
+        $expected = new DtoOtp('test', true);
+        $actual = DtoOtp::createFromArray(['msg' => 'test', 'error' => 'true']);
         $this->assertEquals($expected, $actual);
     }
 
@@ -25,22 +36,31 @@ class DtoOtpTest extends TestCase
         $this->assertEquals('message', $otp->getMsg());
     }
 
+    public function testIsError(): void
+    {
+        $otp = new DtoOtp('test');
+        $this->assertFalse($otp->isError());
+
+        $otp = new DtoOtp('message', true);
+        $this->assertTrue($otp->isError());
+    }
+
     public function testToArray(): void
     {
         $otp = new DtoOtp('test');
-        $this->assertEquals(['msg' => 'test'], $otp->toArray());
+        $this->assertEquals(['msg' => 'test', 'error' => false], $otp->toArray());
 
-        $otp = new DtoOtp('message');
-        $this->assertEquals(['msg' => 'message'], $otp->toArray());
+        $otp = new DtoOtp('message', true);
+        $this->assertEquals(['msg' => 'message', 'error' => true], $otp->toArray());
     }
 
     public function testJsonSerialize(): void
     {
         $otp = new DtoOtp('test');
-        $this->assertJsonStringEqualsJsonString('{"msg":"test"}', json_encode($otp));
+        $this->assertJsonStringEqualsJsonString('{"msg":"test","error":false}', json_encode($otp));
 
-        $otp = new DtoOtp('message');
-        $this->assertJsonStringEqualsJsonString('{"msg":"message"}', json_encode($otp));
+        $otp = new DtoOtp('message', true);
+        $this->assertJsonStringEqualsJsonString('{"msg":"message","error":true}', json_encode($otp));
     }
 }
 
