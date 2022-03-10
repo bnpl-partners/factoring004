@@ -79,6 +79,27 @@ class OtpResource extends AbstractResource
 
     /**
      * @throws \BnplPartners\Factoring004\Exception\AuthenticationException
+     * @throws \BnplPartners\Factoring004\Exception\EndpointUnavailableException
+     * @throws \BnplPartners\Factoring004\Exception\ErrorResponseException
+     * @throws \BnplPartners\Factoring004\Exception\NetworkException
+     * @throws \BnplPartners\Factoring004\Exception\TransportException
+     * @throws \BnplPartners\Factoring004\Exception\UnexpectedResponseException
+     */
+    public function sendOtpReturn(SendOtpReturn $otp): DtoOtp
+    {
+        $response = $this->postRequest('/accountingservice/1.0/sendOtpReturn', $otp->toArray());
+
+        if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
+            return DtoOtp::createFromArray($response->getBody());
+        }
+
+        $this->handleClientError($response);
+
+        throw new EndpointUnavailableException($response);
+    }
+
+    /**
+     * @throws \BnplPartners\Factoring004\Exception\AuthenticationException
      * @throws \BnplPartners\Factoring004\Exception\ErrorResponseException
      * @throws \BnplPartners\Factoring004\Exception\UnexpectedResponseException
      */
