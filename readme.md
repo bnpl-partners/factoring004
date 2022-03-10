@@ -3,7 +3,6 @@
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Usage](#usage)
-    * [Create transport instance](#create-transport-instance)
     * [Create api instance](#create-api-instance)
     * [Authentication](#authentication)
     * [Call endpoints](#call-endpoints)
@@ -150,6 +149,40 @@ $checkOtp = CheckOtp::createFromArray(['merchantId' => '1', 'merchantOrderId' =>
 
 // send request and receive response
 $response = $api->otp->checkOtp($checkOtp);
+
+var_dump($response->getMsg());
+var_dump($response->toArray(), json_encode($response));
+```
+
+Send OTP Return
+
+```php
+use BnplPartners\Factoring004\Otp\SendOtpReturn;
+
+$sendOtpReturn = new SendOtpReturn(6000, '1', '1');
+
+// or
+$sendOtpReturn = SendOtpReturn::createFromArray(['amountAr' => 6000, 'merchantId' => '1', 'merchantOrderId' => '1']);
+
+// send request and receive response
+$response = $api->otp->sendOtpReturn($sendOtpReturn);
+
+var_dump($response->getMsg());
+var_dump($response->toArray(), json_encode($response));
+```
+
+Check OTP Return
+
+```php
+use BnplPartners\Factoring004\Otp\CheckOtpReturn;
+
+$checkOtpReturn = new CheckOtpReturn(6000, '1', '1', '1111');
+
+// or
+$checkOtpReturn = CheckOtp::createFromArray(['amountAr' => 6000, 'merchantId' => '1', 'merchantOrderId' => '1', 'otp' => '1111']);
+
+// send request and receive response
+$response = $api->otp->checkOtpReturn($checkOtpReturn);
 
 var_dump($response->getMsg());
 var_dump($response->toArray(), json_encode($response));
