@@ -28,6 +28,8 @@ class PreAppMessageTest extends TestCase
                 'itemSum' => 8000,
             ],
         ],
+        'partnerEmail' => 'test@example.com',
+        'partnerWebsite' => 'http://example.com',
     ];
 
     private PreAppMessage $message;
@@ -44,6 +46,8 @@ class PreAppMessageTest extends TestCase
             'http://example.com/success',
             'http://example.com/internal',
             [Item::createFromArray(static::REQUIRED_DATA['items'][0])],
+            'test@example.com',
+            'http://example.com',
         );
     }
 
@@ -63,6 +67,8 @@ class PreAppMessageTest extends TestCase
             'http://example.com/success',
             'http://example.com/internal',
             [Item::createFromArray(static::REQUIRED_DATA['items'][0])],
+            'test@example.com',
+            'http://example.com',
         );
     }
 
@@ -82,6 +88,52 @@ class PreAppMessageTest extends TestCase
             'http://example.com/success',
             'http://example.com/internal',
             [Item::createFromArray(static::REQUIRED_DATA['items'][0])],
+            'test@example.com',
+            'http://example.com',
+        );
+    }
+
+    /**
+     * @testWith ["test"]
+     *           ["test@"]
+     *           ["test@example"]
+     *           ["test@localhost"]
+     */
+    public function testPartnerEmailIsNotValidEmail(string $partnerEmail): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        new PreAppMessage(
+            new PartnerData('a', 'b', 'c'),
+            '1',
+            6000,
+            1,
+            'http://example.com/success',
+            'http://example.com/internal',
+            [Item::createFromArray(static::REQUIRED_DATA['items'][0])],
+            $partnerEmail,
+            'http://example.com',
+        );
+    }
+
+    /**
+     * @testWith ["test"]
+     *           ["localhost"]
+     */
+    public function testPartnerWebsiteIsNotValidDomain(string $partnerWebsite): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        new PreAppMessage(
+            new PartnerData('a', 'b', 'c'),
+            '1',
+            6000,
+            1,
+            'http://example.com/success',
+            'http://example.com/internal',
+            [Item::createFromArray(static::REQUIRED_DATA['items'][0])],
+            'test@example.com',
+            $partnerWebsite,
         );
     }
 
@@ -254,6 +306,16 @@ class PreAppMessageTest extends TestCase
         $deliveryPoint = new DeliveryPoint();
         $this->message->setDeliveryPoint($deliveryPoint);
         $this->assertEquals($deliveryPoint, $this->message->getDeliveryPoint());
+    }
+
+    public function testGetPartnerEmail(): void
+    {
+        $this->assertEquals('test@example.com', $this->message->getPartnerEmail());
+    }
+
+    public function testGetPartnerWebsite(): void
+    {
+        $this->assertEquals('http://example.com', $this->message->getPartnerWebsite());
     }
 
     public function testGetItems(): void

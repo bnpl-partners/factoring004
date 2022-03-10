@@ -85,6 +85,8 @@ $message = new PreAppMessage(
     'http://your-store.com/success',
     'http://your-store.com/internal',
     [new Item('1', 'test', '1', 1, 6000, 8000)],
+    'test@example.com',
+    'http://example.com',
 );
 
 // Or
@@ -109,6 +111,8 @@ $message = PreAppMessage::createFromArray([
             'itemSum' => 8000,
         ],
     ],
+    'partnerEmail' => 'test@example.com',
+    'partnerWebsite' => 'http://example.com',
 ]);
 
 //Send request and receive response
