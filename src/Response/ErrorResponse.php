@@ -18,18 +18,25 @@ class ErrorResponse implements JsonSerializable, ArrayInterface
     protected string $message;
     protected ?string $description;
     protected ?string $type;
+    protected ?string $error;
 
-    public function __construct(string $code, string $message, ?string $description = null, ?string $type = null)
-    {
+    public function __construct(
+        string $code,
+        string $message,
+        ?string $description = null,
+        ?string $type = null,
+        ?string $error = null
+    ) {
         $this->code = $code;
         $this->message = $message;
         $this->description = $description;
         $this->type = $type;
+        $this->error = $error;
     }
 
     /**
      * @param array<string, mixed> $response
-     * @psalm-param array{code: string|int, message: string, description?: string, type?: string} $response
+     * @psalm-param array{code: string|int, message: string, description?: string, type?: string, error?: string} $response
      */
     public static function createFromArray(array $response): ErrorResponse
     {
@@ -38,6 +45,7 @@ class ErrorResponse implements JsonSerializable, ArrayInterface
             $response['message'],
             $response['description'] ?? null,
             $response['type'] ?? null,
+            $response['error'] ?? null,
         );
     }
 
@@ -61,9 +69,14 @@ class ErrorResponse implements JsonSerializable, ArrayInterface
         return $this->type;
     }
 
+    public function getError(): ?string
+    {
+        return $this->error;
+    }
+
     /**
      * @return array<string, mixed>
-     * @psalm-return array{code: string, message: string, description?: string, type?: string}
+     * @psalm-return array{code: string, message: string, description?: string, type?: string, error?: string}
      */
     public function toArray(): array
     {
@@ -78,6 +91,10 @@ class ErrorResponse implements JsonSerializable, ArrayInterface
 
         if ($this->getDescription()) {
             $data['description'] = $this->getDescription();
+        }
+
+        if ($this->getError()) {
+            $data['error'] = $this->getError();
         }
 
         return $data;
