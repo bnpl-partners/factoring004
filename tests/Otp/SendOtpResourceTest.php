@@ -14,7 +14,7 @@ class SendOtpResourceTest extends AbstractResourceTest
     /**
      * @throws \BnplPartners\Factoring004\Exception\PackageException
      */
-    public function testCheckOtp(): void
+    public function testSendOtp(): void
     {
         $otp = new SendOtp('1', '100');
 
