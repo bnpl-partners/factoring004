@@ -32,24 +32,42 @@ class ErrorResponse implements JsonSerializable, ArrayInterface
     protected $type;
 
     /**
+     * @var string|null
+     */
+    protected $error;
+
+    /**
      * @param string|null $description
      * @param string|null $type
+     * @param string|null $error
      */
-    public function __construct(string $code, string $message, $description = null, $type = null)
-    {
+    public function __construct(
+        string $code,
+        string $message,
+        $description = null,
+        $type = null,
+        $error = null
+    ) {
         $this->code = $code;
         $this->message = $message;
         $this->description = $description;
         $this->type = $type;
+        $this->error = $error;
     }
 
     /**
      * @param array<string, mixed> $response
-     * @psalm-param array{code: string|int, message: string, description?: string, type?: string} $response
+     * @psalm-param array{code: string|int, message: string, description?: string, type?: string, error?: string} $response
      */
     public static function createFromArray($response): ErrorResponse
     {
-        return new self((string) $response['code'], $response['message'], $response['description'] ?? null, $response['type'] ?? null);
+        return new self(
+            (string) $response['code'],
+            $response['message'],
+            $response['description'] ?? null,
+            $response['type'] ?? null,
+            $response['error'] ?? null
+        );
     }
 
     public function getCode(): string
@@ -79,8 +97,16 @@ class ErrorResponse implements JsonSerializable, ArrayInterface
     }
 
     /**
+     * @return string|null
+     */
+    public function getError()
+    {
+        return $this->error;
+    }
+
+    /**
      * @return array<string, mixed>
-     * @psalm-return array{code: string, message: string, description?: string, type?: string}
+     * @psalm-return array{code: string, message: string, description?: string, type?: string, error?: string}
      */
     public function toArray(): array
     {
@@ -95,6 +121,10 @@ class ErrorResponse implements JsonSerializable, ArrayInterface
 
         if ($this->getDescription()) {
             $data['description'] = $this->getDescription();
+        }
+
+        if ($this->getError()) {
+            $data['error'] = $this->getError();
         }
 
         return $data;

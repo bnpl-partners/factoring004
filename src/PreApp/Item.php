@@ -6,9 +6,6 @@ namespace BnplPartners\Factoring004\PreApp;
 
 use BnplPartners\Factoring004\ArrayInterface;
 
-/**
- * @psalm-immutable
- */
 class Item implements ArrayInterface
 {
     /**
@@ -20,7 +17,7 @@ class Item implements ArrayInterface
      */
     private $itemName;
     /**
-     * @var string
+     * @var string|null
      */
     private $itemCategory;
     /**
@@ -39,14 +36,12 @@ class Item implements ArrayInterface
     public function __construct(
         string $itemId,
         string $itemName,
-        string $itemCategory,
         int $itemQuantity,
         int $itemPrice,
         int $itemSum
     ) {
         $this->itemId = $itemId;
         $this->itemName = $itemName;
-        $this->itemCategory = $itemCategory;
         $this->itemQuantity = $itemQuantity;
         $this->itemPrice = $itemPrice;
         $this->itemSum = $itemSum;
@@ -57,7 +52,7 @@ class Item implements ArrayInterface
      * @psalm-param array{
            itemId: string,
            itemName: string,
-           itemCategory: string,
+           itemCategory?: string,
            itemQuantity: int,
            itemPrice: int,
            itemSum: int,
@@ -67,7 +62,19 @@ class Item implements ArrayInterface
      */
     public static function createFromArray($item): Item
     {
-        return new self($item['itemId'], $item['itemName'], $item['itemCategory'], $item['itemQuantity'], $item['itemPrice'], $item['itemSum']);
+        $self = new self(
+            $item['itemId'],
+            $item['itemName'],
+            $item['itemQuantity'],
+            $item['itemPrice'],
+            $item['itemSum']
+        );
+
+        if (isset($item['itemCategory'])) {
+            $self->setItemCategory($item['itemCategory']);
+        }
+
+        return $self;
     }
 
     public function getItemId(): string
@@ -80,7 +87,10 @@ class Item implements ArrayInterface
         return $this->itemName;
     }
 
-    public function getItemCategory(): string
+    /**
+     * @return string|null
+     */
+    public function getItemCategory()
     {
         return $this->itemCategory;
     }
@@ -100,11 +110,17 @@ class Item implements ArrayInterface
         return $this->itemSum;
     }
 
+    public function setItemCategory(string $itemCategory): Item
+    {
+        $this->itemCategory = $itemCategory;
+        return $this;
+    }
+
     /**
      * @psalm-return array{
            itemId: string,
            itemName: string,
-           itemCategory: string,
+           itemCategory?: string,
            itemQuantity: int,
            itemPrice: int,
            itemSum: int,
@@ -112,13 +128,20 @@ class Item implements ArrayInterface
      */
     public function toArray(): array
     {
-        return [
+        $data = [
             'itemId' => $this->getItemId(),
             'itemName' => $this->getItemName(),
-            'itemCategory' => $this->getItemCategory(),
             'itemQuantity' => $this->getItemQuantity(),
             'itemPrice' => $this->getItemPrice(),
             'itemSum' => $this->getItemSum(),
         ];
+
+        $category = $this->getItemCategory();
+
+        if ($category) {
+            $data['itemCategory'] = $category;
+        }
+
+        return $data;
     }
 }

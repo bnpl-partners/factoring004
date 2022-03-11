@@ -14,12 +14,13 @@ class ErrorResponseTest extends TestCase
         $actual = ErrorResponse::createFromArray(['code' => '100', 'message' => 'test', 'description' => 'test']);
         $this->assertEquals($actual, $expected);
 
-        $expected = new ErrorResponse('100', 'test', 'test', 'test');
+        $expected = new ErrorResponse('100', 'test', 'test', 'test', 'error');
         $actual = ErrorResponse::createFromArray([
             'code' => '100',
             'message' => 'test',
             'description' => 'test',
             'type' => 'test',
+            'error' => 'error',
         ]);
         $this->assertEquals($actual, $expected);
     }
@@ -51,6 +52,15 @@ class ErrorResponseTest extends TestCase
         $this->assertEquals('test', $response->getType());
     }
 
+    public function testGetError(): void
+    {
+        $response = new ErrorResponse('100', 'test', 'test', 'test');
+        $this->assertNull($response->getError());
+
+        $response = new ErrorResponse('100', 'test', 'test', 'test', 'error');
+        $this->assertEquals('error', $response->getError());
+    }
+
     public function testGetDescription(): void
     {
         $response = new ErrorResponse('100', 'test', 'test');
@@ -70,12 +80,13 @@ class ErrorResponseTest extends TestCase
         ];
         $this->assertEquals($expected, $response->toArray());
 
-        $response = new ErrorResponse('200', 'message', 'desc', 'type');
+        $response = new ErrorResponse('200', 'message', 'desc', 'type', 'error');
         $expected = [
             'code' => '200',
             'message' => 'message',
             'description' => 'desc',
             'type' => 'type',
+            'error' => 'error',
         ];
         $this->assertEquals($expected, $response->toArray());
     }
@@ -86,7 +97,7 @@ class ErrorResponseTest extends TestCase
         $expected = json_encode($response->toArray());
         $this->assertJsonStringEqualsJsonString($expected, json_encode($response->jsonSerialize()));
 
-        $response = new ErrorResponse('200', 'message', 'desc', 'type');
+        $response = new ErrorResponse('200', 'message', 'desc', 'type', 'error');
         $expected = json_encode($response->toArray());
         $this->assertJsonStringEqualsJsonString($expected, json_encode($response->jsonSerialize()));
     }
