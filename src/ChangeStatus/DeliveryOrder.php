@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace BnplPartners\Factoring004\ChangeStatus;
 
 /**
@@ -9,16 +7,21 @@ namespace BnplPartners\Factoring004\ChangeStatus;
  */
 class DeliveryOrder extends AbstractMerchantOrder
 {
-    public function __construct(string $orderId, DeliveryStatus $status)
+    /**
+     * @param string $orderId
+     */
+    public function __construct($orderId, DeliveryStatus $status)
     {
+        $orderId = (string) $orderId;
         parent::__construct($orderId, $status);
     }
 
     /**
      * @param array<string, mixed> $order
      * @psalm-param array{orderId: string, status: string} $order
+     * @return \BnplPartners\Factoring004\ChangeStatus\DeliveryOrder
      */
-    public static function createFromArray($order): DeliveryOrder
+    public static function createFromArray($order)
     {
         return new self($order['orderId'], new DeliveryStatus($order['status']));
     }

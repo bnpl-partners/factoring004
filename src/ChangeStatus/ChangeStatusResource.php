@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace BnplPartners\Factoring004\ChangeStatus;
 
 use BnplPartners\Factoring004\AbstractResource;
@@ -24,8 +22,9 @@ class ChangeStatusResource extends AbstractResource
      * @throws \BnplPartners\Factoring004\Exception\NetworkException
      * @throws \BnplPartners\Factoring004\Exception\TransportException
      * @throws \BnplPartners\Factoring004\Exception\UnexpectedResponseException
+     * @return \BnplPartners\Factoring004\ChangeStatus\ChangeStatusResponse
      */
-    public function changeStatusJson($merchantOrders): ChangeStatusResponse
+    public function changeStatusJson($merchantOrders)
     {
         $response = $this->request(
             'PUT',
@@ -64,13 +63,13 @@ class ChangeStatusResource extends AbstractResource
             }
 
             if (empty($data['code'])) {
-                throw new UnexpectedResponseException($response, $data['message'] ?? 'Unexpected response schema');
+                throw new UnexpectedResponseException($response, isset($data['message']) ? $data['message'] : 'Unexpected response schema');
             }
 
             $code = (int) $data['code'];
 
             if (in_array($code, static::AUTH_ERROR_CODES, true)) {
-                throw new AuthenticationException($data['description'] ?? '', $data['message'] ?? '', $code);
+                throw new AuthenticationException(isset($data['description']) ? $data['description'] : '', isset($data['message']) ? $data['message'] : '', $code);
             }
 
             /** @psalm-suppress ArgumentTypeCoercion */

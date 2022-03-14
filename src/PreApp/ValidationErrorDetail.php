@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace BnplPartners\Factoring004\PreApp;
 
 use BnplPartners\Factoring004\ArrayInterface;
@@ -20,8 +18,14 @@ class ValidationErrorDetail implements ArrayInterface
      */
     private $field;
 
-    public function __construct(string $error, string $field)
+    /**
+     * @param string $error
+     * @param string $field
+     */
+    public function __construct($error, $field)
     {
+        $error = (string) $error;
+        $field = (string) $field;
         $this->error = $error;
         $this->field = $field;
     }
@@ -29,8 +33,9 @@ class ValidationErrorDetail implements ArrayInterface
     /**
      * @param array<string, string> $detail
      * @psalm-param array{error: string, field: string} $detail
+     * @return \BnplPartners\Factoring004\PreApp\ValidationErrorDetail
      */
-    public static function createFromArray($detail): ValidationErrorDetail
+    public static function createFromArray($detail)
     {
         return new ValidationErrorDetail($detail['error'], $detail['field']);
     }
@@ -40,28 +45,34 @@ class ValidationErrorDetail implements ArrayInterface
      *
      * @psalm-param array{error: string, field: string}[] $details
      *
-     * @return \BnplPartners\Factoring004\PreApp\ValidationErrorDetail[]
+     * @return mixed[]
      */
-    public static function createMany($details): array
+    public static function createMany($details)
     {
         return array_map([ValidationErrorDetail::class, 'createFromArray'], $details);
     }
 
-    public function getError(): string
+    /**
+     * @return string
+     */
+    public function getError()
     {
         return $this->error;
     }
 
-    public function getField(): string
+    /**
+     * @return string
+     */
+    public function getField()
     {
         return $this->field;
     }
 
     /**
-     * @return array<string, string>
+     * @return mixed[]
      * @psalm-return array{error: string, field: string}
      */
-    public function toArray(): array
+    public function toArray()
     {
         return [
             'error' => $this->getError(),

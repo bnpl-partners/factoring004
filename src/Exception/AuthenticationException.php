@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace BnplPartners\Factoring004\Exception;
 
 use Throwable;
@@ -13,14 +11,26 @@ class AuthenticationException extends ApiException
      */
     protected $description;
 
-    public function __construct(string $description, string $message = '', int $code = 0, Throwable $previous = null)
+    /**
+     * @param string $description
+     * @param string $message
+     * @param int $code
+     * @param \Throwable $previous
+     */
+    public function __construct($description, $message = '', $code = 0, $previous = null)
     {
+        $description = (string) $description;
+        $message = (string) $message;
+        $code = (int) $code;
         parent::__construct($message, $code, $previous);
 
         $this->description = $description;
     }
 
-    public function getDescription(): string
+    /**
+     * @return string
+     */
+    public function getDescription()
     {
         return $this->description;
     }

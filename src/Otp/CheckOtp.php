@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace BnplPartners\Factoring004\Otp;
 
 use BnplPartners\Factoring004\ArrayInterface;
@@ -24,8 +22,16 @@ class CheckOtp implements ArrayInterface
      */
     private $otp;
 
-    public function __construct(string $merchantId, string $merchantOrderId, string $otp)
+    /**
+     * @param string $merchantId
+     * @param string $merchantOrderId
+     * @param string $otp
+     */
+    public function __construct($merchantId, $merchantOrderId, $otp)
     {
+        $merchantId = (string) $merchantId;
+        $merchantOrderId = (string) $merchantOrderId;
+        $otp = (string) $otp;
         $this->merchantId = $merchantId;
         $this->merchantOrderId = $merchantOrderId;
         $this->otp = $otp;
@@ -34,31 +40,42 @@ class CheckOtp implements ArrayInterface
     /**
      * @param array<string, mixed> $checkOtp
      * @psalm-param array{merchantId: string, merchantOrderId: string, otp: string} $checkOtp
+     * @return \BnplPartners\Factoring004\Otp\CheckOtp
      */
-    public static function createFromArray($checkOtp): CheckOtp
+    public static function createFromArray($checkOtp)
     {
         return new self($checkOtp['merchantId'], $checkOtp['merchantOrderId'], $checkOtp['otp']);
     }
 
-    public function getMerchantId(): string
+    /**
+     * @return string
+     */
+    public function getMerchantId()
     {
         return $this->merchantId;
     }
 
-    public function getMerchantOrderId(): string
+    /**
+     * @return string
+     */
+    public function getMerchantOrderId()
     {
         return $this->merchantOrderId;
     }
 
-    public function getOtp(): string
+    /**
+     * @return string
+     */
+    public function getOtp()
     {
         return $this->otp;
     }
 
     /**
      * @psalm-return array{merchantId: string, merchantOrderId: string, otp: string}
+     * @return mixed[]
      */
-    public function toArray(): array
+    public function toArray()
     {
         return [
             'merchantId' => $this->getMerchantId(),

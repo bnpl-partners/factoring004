@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace BnplPartners\Factoring004\PreApp;
 
 use BnplPartners\Factoring004\ArrayInterface;
@@ -25,8 +23,16 @@ class PartnerData implements ArrayInterface
      */
     private $pointCode;
 
-    public function __construct(string $partnerName, string $partnerCode, string $pointCode)
+    /**
+     * @param string $partnerName
+     * @param string $partnerCode
+     * @param string $pointCode
+     */
+    public function __construct($partnerName, $partnerCode, $pointCode)
     {
+        $partnerName = (string) $partnerName;
+        $partnerCode = (string) $partnerCode;
+        $pointCode = (string) $pointCode;
         $this->partnerName = $partnerName;
         $this->partnerCode = $partnerCode;
         $this->pointCode = $pointCode;
@@ -37,8 +43,9 @@ class PartnerData implements ArrayInterface
      * @psalm-param array{partnerName: string, partnerCode: string, pointCode: string} $partnerData
      *
      * @throws \InvalidArgumentException
+     * @return \BnplPartners\Factoring004\PreApp\PartnerData
      */
-    public static function createFromArray($partnerData): PartnerData
+    public static function createFromArray($partnerData)
     {
         if (empty($partnerData['partnerName'])) {
             throw new InvalidArgumentException("Key 'partnerName' is required");
@@ -55,26 +62,35 @@ class PartnerData implements ArrayInterface
         return new self($partnerData['partnerName'], $partnerData['partnerCode'], $partnerData['pointCode']);
     }
 
-    public function getPartnerName(): string
+    /**
+     * @return string
+     */
+    public function getPartnerName()
     {
         return $this->partnerName;
     }
 
-    public function getPartnerCode(): string
+    /**
+     * @return string
+     */
+    public function getPartnerCode()
     {
         return $this->partnerCode;
     }
 
-    public function getPointCode(): string
+    /**
+     * @return string
+     */
+    public function getPointCode()
     {
         return $this->pointCode;
     }
 
     /**
-     * @return array<string, string>
+     * @return mixed[]
      * @psalm-return array{partnerName: string, partnerCode: string, pointCode: string}
      */
-    public function toArray(): array
+    public function toArray()
     {
         return [
             'partnerName' => $this->getPartnerName(),

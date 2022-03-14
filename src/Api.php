@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace BnplPartners\Factoring004;
 
 use BnplPartners\Factoring004\Auth\AuthenticationInterface;
@@ -35,13 +33,15 @@ class Api
     /**
      * @param \BnplPartners\Factoring004\Auth\AuthenticationInterface|null $authentication
      * @param \BnplPartners\Factoring004\Transport\TransportInterface|null $transport
+     * @param string $baseUri
      */
     public function __construct(
-        string $baseUri,
+        $baseUri,
         $authentication = null,
         $transport = null
     ) {
-        $transport = $transport ?? new GuzzleTransport();
+        $baseUri = (string) $baseUri;
+        $transport = isset($transport) ? $transport : new GuzzleTransport();
 
         $this->preApps = new PreAppResource($transport, $baseUri, $authentication);
         $this->otp = new OtpResource($transport, $baseUri, $authentication);
@@ -52,17 +52,23 @@ class Api
      * @param \BnplPartners\Factoring004\Auth\AuthenticationInterface|null $authentication
      * @param \BnplPartners\Factoring004\Transport\TransportInterface|null $transport
      * @param string $baseUri
+     * @return \BnplPartners\Factoring004\Api
      */
     public static function create(
         $baseUri,
         $authentication = null,
         $transport = null
-    ): Api {
+    ) {
         return new self($baseUri, $authentication, $transport);
     }
 
-    public function __get(string $name): AbstractResource
+    /**
+     * @param string $name
+     * @return \BnplPartners\Factoring004\AbstractResource
+     */
+    public function __get($name)
     {
+        $name = (string) $name;
         if ($name === 'preApps') {
             return $this->preApps;
         }

@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace BnplPartners\Factoring004\Transport;
 
 use BnplPartners\Factoring004\Auth\AuthenticationInterface;
@@ -14,21 +12,24 @@ interface TransportInterface
     /**
      * Base URI of endpoints.
      * @param string $uri
+     * @return \BnplPartners\Factoring004\Transport\TransportInterface
      */
-    public function setBaseUri($uri): TransportInterface;
+    public function setBaseUri($uri);
 
     /**
      * Sets global HTTP headers. Content-Type, User-Agent etc.
      *
      * @param array<string, string> $headers
+     * @return \BnplPartners\Factoring004\Transport\TransportInterface
      */
-    public function setHeaders($headers): TransportInterface;
+    public function setHeaders($headers);
 
     /**
      * Sets authentication method.
      * @param \BnplPartners\Factoring004\Auth\AuthenticationInterface $authentication
+     * @return \BnplPartners\Factoring004\Transport\TransportInterface
      */
-    public function setAuthentication($authentication): TransportInterface;
+    public function setAuthentication($authentication);
 
     /**
      * Sends HTTP GET request to the endpoint.
@@ -43,7 +44,7 @@ interface TransportInterface
      * @throws \BnplPartners\Factoring004\Exception\DataSerializationException
      * @throws \BnplPartners\Factoring004\Exception\TransportException
      */
-    public function get($path, $query = [], $headers = []): ResponseInterface;
+    public function get($path, $query = [], $headers = []);
 
     /**
      * Sends HTTP POST request to the endpoint.
@@ -58,7 +59,7 @@ interface TransportInterface
      * @throws \BnplPartners\Factoring004\Exception\DataSerializationException
      * @throws \BnplPartners\Factoring004\Exception\TransportException
      */
-    public function post($path, $data = [], $headers = []): ResponseInterface;
+    public function post($path, $data = [], $headers = []);
 
     /**
      * Sends HTTP request using method and parameters.
@@ -74,5 +75,5 @@ interface TransportInterface
      * @throws \BnplPartners\Factoring004\Exception\DataSerializationException
      * @throws \BnplPartners\Factoring004\Exception\TransportException
      */
-    public function request($method, $path, $data = [], $headers = []): ResponseInterface;
+    public function request($method, $path, $data = [], $headers = []);
 }
