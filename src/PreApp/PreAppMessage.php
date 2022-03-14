@@ -104,6 +104,8 @@ class PreAppMessage implements ArrayInterface
               partnerName: string,
               partnerCode: string,
               pointCode: string,
+              partnerEmail: string,
+              partnerWebsite: string,
           },
           billNumber: string,
           billAmount: int,
@@ -145,9 +147,17 @@ class PreAppMessage implements ArrayInterface
             }
         }
 
-        $object = new self(PartnerData::createFromArray($data['partnerData']), $data['billNumber'], $data['billAmount'], $data['itemsQuantity'], $data['successRedirect'], $data['postLink'], array_map(function (array $item) {
-            return Item::createFromArray($item);
-        }, $data['items']));
+        $object = new self(
+            PartnerData::createFromArray($data['partnerData']),
+            $data['billNumber'],
+            $data['billAmount'],
+            $data['itemsQuantity'],
+            $data['successRedirect'],
+            $data['postLink'],
+            array_map(function (array $item) {
+                return Item::createFromArray($item);
+            }, $data['items'])
+        );
 
         if (isset($data['failRedirect'])) {
             $object->setFailRedirect($data['failRedirect']);

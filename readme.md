@@ -78,7 +78,7 @@ use BnplPartners\Factoring004\PreApp\PreAppMessage;
 use BnplPartners\Factoring004\PreApp\PartnerData;
 
 $message = new PreAppMessage(
-    new PartnerData('test', 'test', 'test'),
+    new PartnerData('test', 'test', 'test', 'test@example.com', 'http://example.com'),
     '1',
     6000,
     1,
@@ -93,6 +93,8 @@ $message = PreAppMessage::createFromArray([
         'partnerName' => 'test',
         'partnerCode' => 'test',
         'pointCode' => 'test',
+        'partnerEmail' => 'test@example.com',
+        'partnerWebsite' => 'http://example.com',
     ],
     'billNumber' => '1',
     'billAmount' => 6000,
