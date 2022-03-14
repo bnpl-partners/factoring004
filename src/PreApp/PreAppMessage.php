@@ -58,7 +58,7 @@ class PreAppMessage implements ArrayInterface
     /**
      * @var \BnplPartners\Factoring004\PreApp\Item[]
      */
-    private array $items;
+    private $items;
 
     /**
      * @param \BnplPartners\Factoring004\PreApp\Item[] $items

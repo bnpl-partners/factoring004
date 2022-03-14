@@ -25,8 +25,14 @@ class PartnerData implements ArrayInterface
      */
     private $pointCode;
 
-    private string $partnerEmail;
-    private string $partnerWebsite;
+    /**
+     * @var string
+     */
+    private $partnerEmail;
+    /**
+     * @var string
+     */
+    private $partnerWebsite;
 
     public function __construct(
         string $partnerName,
