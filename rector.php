@@ -16,7 +16,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
     $services = $containerConfigurator->services();
 
     $paths = glob(__DIR__ . '/vendor/rector/rector/rules/DowngradePhp7*/Rector/*/*.php');
-    $paths = array_filter($paths, fn($path) => strpos($path, 'DowngradePhp70') === false);
+    $paths = array_merge($paths, glob(__DIR__ . '/vendor/rector/rector/rules/DowngradePhp56/Rector/*/*.php'));
 
     $serviceClasses = [];
 
