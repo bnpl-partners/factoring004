@@ -15,15 +15,15 @@ class PartnerData implements ArrayInterface
     private string $partnerName;
     private string $partnerCode;
     private string $pointCode;
-    private string $partnerEmail;
-    private string $partnerWebsite;
+    private ?string $partnerEmail;
+    private ?string $partnerWebsite;
 
     public function __construct(
         string $partnerName,
         string $partnerCode,
         string $pointCode,
-        string $partnerEmail,
-        string $partnerWebsite
+        ?string $partnerEmail = null,
+        ?string $partnerWebsite = null
     ) {
         $this->partnerName = $partnerName;
         $this->partnerCode = $partnerCode;
@@ -38,8 +38,8 @@ class PartnerData implements ArrayInterface
            partnerName: string,
            partnerCode: string,
            pointCode: string,
-           partnerEmail: string,
-           partnerWebsite: string,
+           partnerEmail?: string|null,
+           partnerWebsite?: string|null,
       } $partnerData
      *
      * @throws \InvalidArgumentException
@@ -58,20 +58,12 @@ class PartnerData implements ArrayInterface
             throw new InvalidArgumentException("Key 'pointCode' is required");
         }
 
-        if (empty($partnerData['partnerEmail'])) {
-            throw new InvalidArgumentException("Key 'partnerEmail' is required");
-        }
-
-        if (empty($partnerData['partnerWebsite'])) {
-            throw new InvalidArgumentException("Key 'partnerWebsite' is required");
-        }
-
         return new self(
             $partnerData['partnerName'],
             $partnerData['partnerCode'],
             $partnerData['pointCode'],
-            $partnerData['partnerEmail'],
-            $partnerData['partnerWebsite'],
+            $partnerData['partnerEmail'] ?? null,
+            $partnerData['partnerWebsite'] ?? null,
         );
     }
 
@@ -90,12 +82,12 @@ class PartnerData implements ArrayInterface
         return $this->pointCode;
     }
 
-    public function getPartnerEmail(): string
+    public function getPartnerEmail(): ?string
     {
         return $this->partnerEmail;
     }
 
-    public function getPartnerWebsite(): string
+    public function getPartnerWebsite(): ?string
     {
         return $this->partnerWebsite;
     }
@@ -106,18 +98,18 @@ class PartnerData implements ArrayInterface
          partnerName: string,
          partnerCode: string,
          pointCode: string,
-         partnerEmail: string,
-         partnerWebsite: string,
+         partnerEmail?: string,
+         partnerWebsite?: string,
        }
      */
     public function toArray(): array
     {
-        return [
+        return array_filter([
             'partnerName' => $this->getPartnerName(),
             'partnerCode' => $this->getPartnerCode(),
             'pointCode' => $this->getPointCode(),
             'partnerEmail' => $this->getPartnerEmail(),
             'partnerWebsite' => $this->getPartnerWebsite(),
-        ];
+        ]);
     }
 }
