@@ -22,6 +22,7 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response as PsrResponse;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
+use Psr\Log\LoggerInterface;
 
 class GuzzleTransportTest extends TestCase
 {
@@ -495,5 +496,27 @@ class GuzzleTransportTest extends TestCase
     private function createTransport(ClientInterface $client): TransportInterface
     {
         return new GuzzleTransport($client);
+    }
+
+    public function testLogging(): void
+    {
+        $client = $this->createStub(ClientInterface::class);
+        $client->method('send')
+            ->willReturn(new PsrResponse(200, [], '{"a":"15"}'));
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects($this->atLeast(2))
+            ->method('debug')
+            ->withConsecutive(
+                [AbstractTransport::LOGGER_PREFIX . ': Request: POST http://example.com/ {"a":"15"}',[]],
+                [AbstractTransport::LOGGER_PREFIX . ': Response: 200 http://example.com/ {"a":"15"}',[]]
+            );
+
+        $transport = $this->createTransport($client);
+
+        $transport->setBaseUri('http://example.com');
+
+        $transport->setLogger($logger);
+
+        $transport->post('/',['a'=>'15']);
     }
 }
