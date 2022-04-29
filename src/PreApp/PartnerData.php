@@ -104,12 +104,23 @@ class PartnerData implements ArrayInterface
      */
     public function toArray(): array
     {
-        return array_filter([
+        $data = [
             'partnerName' => $this->getPartnerName(),
             'partnerCode' => $this->getPartnerCode(),
             'pointCode' => $this->getPointCode(),
-            'partnerEmail' => $this->getPartnerEmail(),
-            'partnerWebsite' => $this->getPartnerWebsite(),
-        ]);
+        ];
+
+        $partnerEmail = $this->getPartnerEmail();
+        $partnerWebsite = $this->getPartnerWebsite();
+
+        if ($partnerEmail) {
+            $data['partnerEmail'] = $partnerEmail;
+        }
+
+        if ($partnerWebsite) {
+            $data['partnerWebsite'] = $partnerWebsite;
+        }
+
+        return $data;
     }
 }
