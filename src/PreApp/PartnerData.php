@@ -23,11 +23,11 @@ class PartnerData implements ArrayInterface
      */
     private $pointCode;
     /**
-     * @var string
+     * @var string|null
      */
     private $partnerEmail;
     /**
-     * @var string
+     * @var string|null
      */
     private $partnerWebsite;
 
@@ -35,17 +35,11 @@ class PartnerData implements ArrayInterface
      * @param string $partnerName
      * @param string $partnerCode
      * @param string $pointCode
-     * @param string $partnerEmail
-     * @param string $partnerWebsite
+     * @param string|null $partnerEmail
+     * @param string|null $partnerWebsite
      */
-    public function __construct($partnerName, $partnerCode, $pointCode, $partnerEmail, $partnerWebsite)
+    public function __construct($partnerName, $partnerCode, $pointCode, $partnerEmail = null, $partnerWebsite = null)
     {
-        $partnerName = (string) $partnerName;
-        $partnerCode = (string) $partnerCode;
-        $pointCode = (string) $pointCode;
-        $partnerEmail = (string) $partnerEmail;
-        $partnerWebsite = (string) $partnerWebsite;
-
         $this->partnerName = $partnerName;
         $this->partnerCode = $partnerCode;
         $this->pointCode = $pointCode;
@@ -59,8 +53,8 @@ class PartnerData implements ArrayInterface
            partnerName: string,
            partnerCode: string,
            pointCode: string,
-           partnerEmail: string,
-           partnerWebsite: string,
+           partnerEmail?: string|null,
+           partnerWebsite?: string|null,
       } $partnerData
      *
      * @throws \InvalidArgumentException
@@ -80,20 +74,12 @@ class PartnerData implements ArrayInterface
             throw new InvalidArgumentException("Key 'pointCode' is required");
         }
 
-        if (empty($partnerData['partnerEmail'])) {
-            throw new InvalidArgumentException("Key 'partnerEmail' is required");
-        }
-
-        if (empty($partnerData['partnerWebsite'])) {
-            throw new InvalidArgumentException("Key 'partnerWebsite' is required");
-        }
-
         return new self(
             $partnerData['partnerName'],
             $partnerData['partnerCode'],
             $partnerData['pointCode'],
-            $partnerData['partnerEmail'],
-            $partnerData['partnerWebsite']
+            isset($partnerData['partnerEmail']) ? $partnerData['partnerEmail'] : null,
+            isset($partnerData['partnerWebsite']) ? $partnerData['partnerWebsite'] : null
         );
     }
 
@@ -122,7 +108,7 @@ class PartnerData implements ArrayInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getPartnerEmail()
     {
@@ -130,7 +116,7 @@ class PartnerData implements ArrayInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getPartnerWebsite()
     {
@@ -143,18 +129,29 @@ class PartnerData implements ArrayInterface
          partnerName: string,
          partnerCode: string,
          pointCode: string,
-         partnerEmail: string,
-         partnerWebsite: string,
+         partnerEmail?: string,
+         partnerWebsite?: string,
        }
      */
     public function toArray()
     {
-        return [
+        $data = [
             'partnerName' => $this->getPartnerName(),
             'partnerCode' => $this->getPartnerCode(),
             'pointCode' => $this->getPointCode(),
-            'partnerEmail' => $this->getPartnerEmail(),
-            'partnerWebsite' => $this->getPartnerWebsite(),
         ];
+
+        $partnerEmail = $this->getPartnerEmail();
+        $partnerWebsite = $this->getPartnerWebsite();
+
+        if ($partnerEmail) {
+            $data['partnerEmail'] = $partnerEmail;
+        }
+
+        if ($partnerWebsite) {
+            $data['partnerWebsite'] = $partnerWebsite;
+        }
+
+        return $data;
     }
 }

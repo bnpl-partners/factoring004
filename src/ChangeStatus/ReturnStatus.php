@@ -14,7 +14,7 @@ use MyCLabs\Enum\Enum;
 final class ReturnStatus extends Enum
 {
     const RE_TURN = 'return';
-    const PARTRETURN = 'partReturn';
+    const PARTRETURN = 'part_return';
 
     public static function __callStatic($name, $arguments)
     {
