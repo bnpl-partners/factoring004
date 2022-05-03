@@ -67,13 +67,14 @@ abstract class AbstractTransport implements TransportInterface
     {
         $request = $this->prepareRequest(strtoupper($method), $path, $data, $headers);
 
+        /** @psalm-suppress PossiblyNullReference */
         $this->logger->debug(
             static::LOGGER_PREFIX . ': Request: ' .
             sprintf(
                 '%s %s %s',
                 $request->getMethod(),
-                $request->getUri(),
-                $request->getBody()
+                (string) $request->getUri(),
+                (string) $request->getBody()
             )
         );
 
@@ -84,8 +85,8 @@ abstract class AbstractTransport implements TransportInterface
             sprintf(
                 '%d %s %s',
                 $response->getStatusCode(),
-                $request->getUri(),
-                $response->getBody()
+                (string) $request->getUri(),
+                (string) $response->getBody()
             )
         );
 
