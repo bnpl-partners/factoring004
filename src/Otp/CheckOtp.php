@@ -21,30 +21,33 @@ class CheckOtp implements ArrayInterface
      * @var string
      */
     private $otp;
+    /**
+     * @var int
+     */
+    private $amount;
 
     /**
      * @param string $merchantId
      * @param string $merchantOrderId
      * @param string $otp
+     * @param int $amount
      */
-    public function __construct($merchantId, $merchantOrderId, $otp)
+    public function __construct($merchantId, $merchantOrderId, $otp, $amount)
     {
-        $merchantId = (string) $merchantId;
-        $merchantOrderId = (string) $merchantOrderId;
-        $otp = (string) $otp;
         $this->merchantId = $merchantId;
         $this->merchantOrderId = $merchantOrderId;
         $this->otp = $otp;
+        $this->amount = $amount;
     }
 
     /**
      * @param array<string, mixed> $checkOtp
-     * @psalm-param array{merchantId: string, merchantOrderId: string, otp: string} $checkOtp
+     * @psalm-param array{merchantId: string, merchantOrderId: string, otp: string, amount: int} $checkOtp
      * @return \BnplPartners\Factoring004\Otp\CheckOtp
      */
     public static function createFromArray($checkOtp)
     {
-        return new self($checkOtp['merchantId'], $checkOtp['merchantOrderId'], $checkOtp['otp']);
+        return new self($checkOtp['merchantId'], $checkOtp['merchantOrderId'], $checkOtp['otp'], $checkOtp['amount']);
     }
 
     /**
@@ -72,8 +75,8 @@ class CheckOtp implements ArrayInterface
     }
 
     /**
-     * @psalm-return array{merchantId: string, merchantOrderId: string, otp: string}
-     * @return mixed[]
+     * @psalm-return array{merchantId: string, merchantOrderId: string, otp: string, amount: int}
+     * @return array<string, mixed>
      */
     public function toArray()
     {
@@ -81,6 +84,15 @@ class CheckOtp implements ArrayInterface
             'merchantId' => $this->getMerchantId(),
             'merchantOrderId' => $this->getMerchantOrderId(),
             'otp' => $this->getOtp(),
+            'amount' => $this->getAmount()
         ];
+    }
+
+    /**
+     * @return int
+     */
+    public function getAmount()
+    {
+        return $this->amount;
     }
 }
