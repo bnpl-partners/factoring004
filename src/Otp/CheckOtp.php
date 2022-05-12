@@ -14,21 +14,23 @@ class CheckOtp implements ArrayInterface
     private string $merchantId;
     private string $merchantOrderId;
     private string $otp;
+    private int $amount;
 
-    public function __construct(string $merchantId, string $merchantOrderId, string $otp)
+    public function __construct(string $merchantId, string $merchantOrderId, string $otp, int $amount)
     {
         $this->merchantId = $merchantId;
         $this->merchantOrderId = $merchantOrderId;
         $this->otp = $otp;
+        $this->amount = $amount;
     }
 
     /**
      * @param array<string, mixed> $checkOtp
-     * @psalm-param array{merchantId: string, merchantOrderId: string, otp: string} $checkOtp
+     * @psalm-param array{merchantId: string, merchantOrderId: string, otp: string, amount: int} $checkOtp
      */
     public static function createFromArray(array $checkOtp): CheckOtp
     {
-        return new self($checkOtp['merchantId'], $checkOtp['merchantOrderId'], $checkOtp['otp']);
+        return new self($checkOtp['merchantId'], $checkOtp['merchantOrderId'], $checkOtp['otp'], $checkOtp['amount']);
     }
 
     public function getMerchantId(): string
@@ -55,6 +57,12 @@ class CheckOtp implements ArrayInterface
             'merchantId' => $this->getMerchantId(),
             'merchantOrderId' => $this->getMerchantOrderId(),
             'otp' => $this->getOtp(),
+            'amount' => $this->getAmount()
         ];
+    }
+
+    public function getAmount(): int
+    {
+        return $this->amount;
     }
 }
