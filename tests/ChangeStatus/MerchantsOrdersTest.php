@@ -10,6 +10,13 @@ class MerchantsOrdersTest extends TestCase
 {
     public function testCreateFromArray(): void
     {
+        $expected = new MerchantsOrders('1', [new CancelOrder('1000', CancelStatus::CANCEL())]);
+        $actual = MerchantsOrders::createFromArray([
+            'merchantId' => '1',
+            'orders' => [['orderId' => '1000', 'status' => CancelStatus::CANCEL()->getValue()]],
+        ]);
+        $this->assertEquals($expected, $actual);
+
         $expected = new MerchantsOrders('1', [new DeliveryOrder('1000', DeliveryStatus::DELIVERY(), 6000)]);
         $actual = MerchantsOrders::createFromArray([
             'merchantId' => '1',
