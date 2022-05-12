@@ -127,10 +127,10 @@ Send OTP
 ```php
 use BnplPartners\Factoring004\Otp\SendOtp;
 
-$sendOtp = new SendOtp('1', '1');
+$sendOtp = new SendOtp('1', '1', 6000);
 
 // or
-$sendOtp = SendOtp::createFromArray(['merchantId' => '1', 'merchantOrderId' => '1']);
+$sendOtp = SendOtp::createFromArray(['merchantId' => '1', 'merchantOrderId' => '1', 'amount' => 6000]);
 
 // send request and receive response
 $response = $api->otp->sendOtp($sendOtp);
