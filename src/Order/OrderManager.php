@@ -81,4 +81,9 @@ class OrderManager
 
         return $this->api->preApps->preApp($data);
     }
+
+    public function delivery(string $merchantId, string $orderId, int $amount): StatusConfirmationInterface
+    {
+        return new Delivery($this->api->otp, $this->api->changeStatus, $merchantId, $orderId, $amount);
+    }
 }
