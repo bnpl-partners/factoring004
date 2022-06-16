@@ -86,4 +86,9 @@ class OrderManager
     {
         return new Delivery($this->api->otp, $this->api->changeStatus, $merchantId, $orderId, $amount);
     }
+
+    public function fullRefund(string $merchantId, string $orderId): StatusConfirmationInterface
+    {
+        return new FullRefund($this->api->otp, $this->api->changeStatus, $merchantId, $orderId);
+    }
 }
