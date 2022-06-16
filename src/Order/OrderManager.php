@@ -6,6 +6,8 @@ namespace BnplPartners\Factoring004\Order;
 
 use BnplPartners\Factoring004\Api;
 use BnplPartners\Factoring004\Auth\AuthenticationInterface;
+use BnplPartners\Factoring004\ChangeStatus\CancelOrder;
+use BnplPartners\Factoring004\ChangeStatus\CancelStatus;
 use BnplPartners\Factoring004\PreApp\PreAppMessage;
 use BnplPartners\Factoring004\Response\PreAppResponse;
 use InvalidArgumentException;
@@ -95,5 +97,23 @@ class OrderManager
     public function partialRefund(string $merchantId, string $orderId, int $amount): StatusConfirmationInterface
     {
         return new PartialRefund($this->api->otp, $this->api->changeStatus, $merchantId, $orderId, $amount);
+    }
+
+    /**
+     * @throws \BnplPartners\Factoring004\Exception\ErrorResponseException
+     * @throws \BnplPartners\Factoring004\Exception\NetworkException
+     * @throws \BnplPartners\Factoring004\Exception\DataSerializationException
+     * @throws \BnplPartners\Factoring004\Exception\UnexpectedResponseException
+     * @throws \BnplPartners\Factoring004\Exception\EndpointUnavailableException
+     * @throws \BnplPartners\Factoring004\Exception\AuthenticationException
+     * @throws \BnplPartners\Factoring004\Exception\TransportException
+     */
+    public function cancel(string $merchantId, string $orderId): StatusConfirmationResponse
+    {
+        return StatusConfirmationResponse::create(
+            ChangeStatusCaller::create($this->api->changeStatus, $merchantId)
+                ->call(new CancelOrder($orderId, CancelStatus::CANCEL()))
+                ->getMsg()
+        );
     }
 }
