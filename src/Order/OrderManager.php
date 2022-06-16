@@ -91,4 +91,9 @@ class OrderManager
     {
         return new FullRefund($this->api->otp, $this->api->changeStatus, $merchantId, $orderId);
     }
+
+    public function partialRefund(string $merchantId, string $orderId, int $amount): StatusConfirmationInterface
+    {
+        return new PartialRefund($this->api->otp, $this->api->changeStatus, $merchantId, $orderId, $amount);
+    }
 }

@@ -50,6 +50,19 @@ class OrderManagerTest extends TestCase
         $this->assertEquals(0, $this->getPropertyValue($confirmation, 'amount'));
     }
 
+    /**
+     * @dataProvider ordersProvider
+     */
+    public function testPartialRefund(string $merchantId, string $orderId, int $amount): void
+    {
+        $manager = OrderManager::create('http://example.com');
+        $confirmation = $manager->partialRefund($merchantId, $orderId, $amount);
+
+        $this->assertEquals($merchantId, $this->getPropertyValue($confirmation, 'merchantId'));
+        $this->assertEquals($orderId, $this->getPropertyValue($confirmation, 'orderId'));
+        $this->assertEquals($amount, $this->getPropertyValue($confirmation, 'amount'));
+    }
+
     public function ordersProvider(): array
     {
         return [
